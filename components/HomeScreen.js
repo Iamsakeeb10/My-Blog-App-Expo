@@ -30,6 +30,8 @@ const HomeScreen = ({ selectedDropdownOptionRef }) => {
 
       const data = await response.json();
 
+      setPosts(data);
+
       // Sorting posts based on the selecting options...
       let sortedPosts;
 
