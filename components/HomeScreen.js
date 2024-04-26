@@ -38,7 +38,8 @@ const HomeScreen = ({ selectedDropdownOptionRef }) => {
       } else if (selectedDropdownOptionRef === "postDescending") {
         sortedPosts = data.sort((a, b) => b.title.localeCompare(a.title));
       } else if (selectedDropdownOptionRef === "postId") {
-        sortedPosts = data.sort((a, b) => a.id.localeCompare(b.id));
+        sortedPosts = data.sort((a, b) => a.id - b.id);
+        console.log(sortedPosts);
       } else {
         sortedPosts = data;
       }
