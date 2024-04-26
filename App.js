@@ -3,7 +3,7 @@ import { Picker } from "@react-native-picker/picker";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import BlogDetails from "./components/BlogDetails";
 import HomeScreen from "./components/HomeScreen";
@@ -12,9 +12,8 @@ import IconButton from "./components/UI/IconButton";
 const Stack = createNativeStackNavigator();
 
 const App = () => {
-  // const [selectedOption, setSelectedOption] = useState("");
-  const selectedOptionRef = useRef("");
-  console.log(selectedOptionRef);
+  const [selectedOption, setSelectedOption] = useState("");
+  // const selectedOptionRef = useRef("postAscending");
 
   const [isOpenDropdown, setIsOpenDropdown] = useState(false);
 
@@ -23,7 +22,7 @@ const App = () => {
   }
 
   function handleOptionChange(itemValue) {
-    selectedOptionRef.current = itemValue;
+    setSelectedOption(itemValue);
     setIsOpenDropdown(false);
   }
 
@@ -44,12 +43,12 @@ const App = () => {
               fontSize: 21,
             },
             headerRight: () => (
-              <View style={styles.iconContainer}>
+              <View style={styles.dropdownContainer}>
                 <View style={styles.dropdown}>
                   {isOpenDropdown && (
                     <Picker
                       style={styles.picker}
-                      selectedValue={selectedOptionRef}
+                      selectedValue={selectedOption}
                       onValueChange={(itemValue) =>
                         handleOptionChange(itemValue)
                       }
@@ -73,11 +72,13 @@ const App = () => {
         >
           <Stack.Screen
             name="MyBlogs"
-            component={HomeScreen}
+            // component={HomeScreen}
             options={{
               title: "My Blogs",
             }}
-          />
+          >
+            {() => <HomeScreen selectedDropdownOptionRef={selectedOption} />}
+          </Stack.Screen>
           <Stack.Screen
             name="BlogDetails"
             component={BlogDetails}
@@ -111,7 +112,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
 
-  iconContainer: {
+  dropdownContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",

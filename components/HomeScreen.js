@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import BlogPost from "./BlogPost";
 
-const Blogs = () => {
+const HomeScreen = ({ selectedDropdownOptionRef }) => {
   const [posts, setPosts] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -19,8 +19,9 @@ const Blogs = () => {
   const url = `https://jsonplaceholder.typicode.com/posts?_page=${pageNumber}&_limit=${postsPerPage}`;
 
   useEffect(() => {
+    setPageNumber(1);
     getPosts();
-  }, []);
+  }, [selectedDropdownOptionRef]);
 
   async function getPosts() {
     setIsLoading(true);
@@ -29,11 +30,21 @@ const Blogs = () => {
 
       const data = await response.json();
 
-      // Sorting posts in ascending order...
-      const sortedPosts = data.sort((a, b) => a.title.localeCompare(b.title));
+      // Sorting posts based on the selecting options...
+      let sortedPosts;
+
+      if (selectedDropdownOptionRef === "postAscending") {
+        sortedPosts = data.sort((a, b) => a.title.localeCompare(b.title));
+      } else if (selectedDropdownOptionRef === "postDescending") {
+        sortedPosts = data.sort((a, b) => b.title.localeCompare(a.title));
+      } else if (selectedDropdownOptionRef === "postId") {
+        sortedPosts = data.sort((a, b) => a.id.localeCompare(b.id));
+      } else {
+        sortedPosts = data;
+      }
 
       // Updating posts array with prev posts and sorted posts...
-      setPosts((prevPosts) => [...prevPosts, ...sortedPosts]);
+      setPosts(sortedPosts);
 
       // Incrementing page number by one...
       setPageNumber(pageNumber + 1);
@@ -79,7 +90,7 @@ const Blogs = () => {
   );
 };
 
-export default Blogs;
+export default HomeScreen;
 
 const styles = StyleSheet.create({
   endMessageContainer: {
