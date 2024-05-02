@@ -21,7 +21,7 @@ const HomeScreen = ({ selectedDropdownOptionRef }) => {
   useEffect(() => {
     setPageNumber(1);
     getPosts();
-  }, [selectedDropdownOptionRef]);
+  }, []);
 
   async function getPosts() {
     setIsLoading(true);
@@ -30,24 +30,24 @@ const HomeScreen = ({ selectedDropdownOptionRef }) => {
 
       const data = await response.json();
 
-      setPosts(data);
+      setPosts((prevPosts) => [...prevPosts, ...data]);
 
-      // Sorting posts based on the selecting options...
-      let sortedPosts;
+      // // Sorting posts based on the selecting options...
+      // let sortedPosts;
 
-      if (selectedDropdownOptionRef === "postAscending") {
-        sortedPosts = data.sort((a, b) => a.title.localeCompare(b.title));
-      } else if (selectedDropdownOptionRef === "postDescending") {
-        sortedPosts = data.sort((a, b) => b.title.localeCompare(a.title));
-      } else if (selectedDropdownOptionRef === "postId") {
-        sortedPosts = data.sort((a, b) => a.id - b.id);
-        console.log(sortedPosts);
-      } else {
-        sortedPosts = data;
-      }
+      // if (selectedDropdownOptionRef === "postAscending") {
+      //   sortedPosts = data.sort((a, b) => a.title.localeCompare(b.title));
+      // } else if (selectedDropdownOptionRef === "postDescending") {
+      //   sortedPosts = data.sort((a, b) => b.title.localeCompare(a.title));
+      // } else if (selectedDropdownOptionRef === "postId") {
+      //   sortedPosts = data.sort((a, b) => a.id - b.id);
+      //   console.log(sortedPosts);
+      // } else {
+      //   sortedPosts = data;
+      // }
 
-      // Updating posts array with prev posts and sorted posts...
-      setPosts(sortedPosts);
+      // // Updating posts array with prev posts and sorted posts...
+      // setPosts(sortedPosts);
 
       // Incrementing page number by one...
       setPageNumber(pageNumber + 1);
