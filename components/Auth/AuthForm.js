@@ -1,10 +1,10 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { AuthContext } from "../../store/auth-context";
+import { loginUser } from "../../util/auth";
 import Button from "../UI/Button";
-import { loginUser } from "../util/auth";
 import Input from "./Input";
 
 const AuthForm = () => {
@@ -115,23 +115,25 @@ const AuthForm = () => {
   };
 
   return (
-    <View>
-      <Input
-        label="Email Address"
-        keyboardType="email-address"
-        onUpdateValue={(value) => inputChangeHandler("email", value)}
-        value={inputValues.email}
-      />
-      {invalidEmail && <Text style={styles.errorText}>{invalidEmail}</Text>}
-      <Input
-        label="Password"
-        secure
-        onUpdateValue={(value) => inputChangeHandler("password", value)}
-        value={inputValues.password}
-      />
-      {invalidPassword && (
-        <Text style={styles.errorText}>{invalidPassword}</Text>
-      )}
+    <View style={styles.rootContainer}>
+      <View style={styles.inputContainer}>
+        <Input
+          label="Email Address"
+          keyboardType="email-address"
+          onUpdateValue={(value) => inputChangeHandler("email", value)}
+          value={inputValues.email}
+        />
+        {invalidEmail && <Text style={styles.errorText}>{invalidEmail}</Text>}
+        <Input
+          label="Password"
+          secure
+          onUpdateValue={(value) => inputChangeHandler("password", value)}
+          value={inputValues.password}
+        />
+        {invalidPassword && (
+          <Text style={styles.errorText}>{invalidPassword}</Text>
+        )}
+      </View>
       <View
         style={[
           styles.btnContainer,
@@ -146,6 +148,24 @@ const AuthForm = () => {
           Log In
         </Button>
       </View>
+
+      <View style={styles.authScreenContainer}>
+        <View style={styles.getStartedContainer}>
+          <Pressable onPress={() => navigation.navigate("FirstScreen")}>
+            <Text style={styles.text}>Get Started</Text>
+          </Pressable>
+        </View>
+        <View style={styles.signInContainer}>
+          <Pressable onPress={() => navigation.navigate("SecondScreen")}>
+            <Text style={styles.text}>Sign In</Text>
+          </Pressable>
+        </View>
+        <View style={styles.signUpContainer}>
+          <Pressable onPress={() => navigation.navigate("ThirdScreen")}>
+            <Text style={styles.text}>Sign Up</Text>
+          </Pressable>
+        </View>
+      </View>
       <View style={styles.toastContainer}>
         <Toast />
       </View>
@@ -158,6 +178,7 @@ export default AuthForm;
 const styles = StyleSheet.create({
   btnContainer: {
     marginTop: 12,
+    marginBottom: 24,
     justifyContent: "center",
     borderRadius: 6,
     width: "100%",
@@ -172,6 +193,36 @@ const styles = StyleSheet.create({
   },
 
   toastContainer: {
-    marginTop: 260,
+    marginTop: 170,
   },
+
+  text: {
+    textDecorationLine: "underline",
+    color: "#A0153E",
+    fontSize: 15,
+  },
+
+  authScreenContainer: {
+    alignItems: "center",
+    rowGap: 6,
+  },
+
+  // getStartedContainer: {
+  //   backgroundColor: "#874CCC",
+  //   paddingHorizontal: 16,
+  //   paddingVertical: 10,
+  //   borderRadius: 6,
+  // },
+  // signInContainer: {
+  //   backgroundColor: "#D94638",
+  //   paddingHorizontal: 16,
+  //   paddingVertical: 10,
+  //   borderRadius: 6,
+  // },
+  // signUpContainer: {
+  //   backgroundColor: "#C65BCF",
+  //   paddingHorizontal: 16,
+  //   paddingVertical: 10,
+  //   borderRadius: 6,
+  // },
 });

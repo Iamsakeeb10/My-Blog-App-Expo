@@ -4,12 +4,15 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
 import { useContext } from "react";
 import { StyleSheet, View } from "react-native";
+import FirstScreen from "./Screens/FirstScreen";
+import HomeScreen from "./Screens/HomeScreen";
+import SecondScreen from "./Screens/SecondScreen";
+import ThirdScreen from "./Screens/ThirdScreen";
+import UserProfile from "./Screens/UserProfileScreen";
+import WelcomeScreen from "./Screens/WelcomeScreen";
 import AuthContentScreen from "./components/Auth/AuthContentScreen";
-import BlogDetails from "./components/BlogDetails";
-import HomeScreen from "./components/HomeScreen";
+import BlogDetails from "./components/BlogDetail/BlogDetails";
 import IconButton from "./components/UI/IconButton";
-import UserProfile from "./components/UserProfileScreen";
-import WelcomeScreen from "./components/WelcomeScreen";
 import AuthContextProvider, { AuthContext } from "./store/auth-context";
 
 const Stack = createNativeStackNavigator();
@@ -135,6 +138,45 @@ const App = () => {
               name="Login"
               component={AuthContentScreen}
               options={{
+                contentStyle: {
+                  backgroundColor: "#fff",
+                },
+              }}
+            />
+
+            {/* First, Second & Third Screen... */}
+            <Stack.Screen
+              name="FirstScreen"
+              component={FirstScreen}
+              options={{
+                headerShown: false,
+                headerTitle: "First Screen",
+                contentStyle: {
+                  backgroundColor: "#fff",
+                },
+              }}
+            />
+            <Stack.Screen
+              name="SecondScreen"
+              component={SecondScreen}
+              options={{
+                headerShown: false,
+                headerStyle: {
+                  backgroundColor: "#fff",
+                },
+                contentStyle: {
+                  backgroundColor: "#fff",
+                },
+              }}
+            />
+            <Stack.Screen
+              name="ThirdScreen"
+              component={ThirdScreen}
+              options={{
+                headerShown: false,
+                headerStyle: {
+                  backgroundColor: "#fff",
+                },
                 contentStyle: {
                   backgroundColor: "#fff",
                 },

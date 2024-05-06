@@ -1,0 +1,77 @@
+import { useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
+const SwitchToggler = () => {
+  const [isEnabled, setIsEnabled] = useState(false);
+
+  const toggleSwitch = () => {
+    setIsEnabled((previousState) => !previousState);
+  };
+
+  return (
+    <TouchableOpacity style={styles.container} onPress={toggleSwitch}>
+      <View style={[styles.switch, isEnabled && styles.switchEnabled]}>
+        <View style={[styles.slider, isEnabled && styles.sliderEnabled]} />
+        <Text
+          style={[
+            styles.text,
+            isEnabled ? styles.textEnabled : styles.disabled,
+          ]}
+        >
+          {isEnabled ? "বাং" : "EN"}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+  },
+  switch: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderRadius: 100,
+    borderColor: "#ccc",
+    width: 78,
+    height: 28,
+    overflow: "hidden",
+  },
+  text: {
+    color: "#fff", // Set text color to white
+    fontSize: 12,
+    fontWeight: "bold",
+    marginRight: 10,
+    textAlign: "center",
+    position: "absolute",
+    left: "50%",
+    top: "50%",
+    transform: [{ translateX: 12 }, { translateY: -9 }],
+  },
+  textEnabled: {
+    left: 0, // Adjust position when enabled
+  },
+  slider: {
+    width: 40,
+    height: 30,
+    borderRadius: 100,
+    backgroundColor: "#D94638",
+    marginLeft: "auto",
+    // marginRight: 5,
+    position: "relative",
+  },
+  sliderEnabled: {
+    transform: [{ translateX: -5 }],
+    backgroundColor: "red",
+    marginLeft: 5,
+    marginRight: "auto",
+  },
+
+  disabled: {
+    color: "#fff",
+  },
+});
+
+export default SwitchToggler;
