@@ -14,7 +14,6 @@ export default AuthContentScreen;
 
 const styles = StyleSheet.create({
   authContent: {
-    marginTop: 30,
-    marginHorizontal: 32,
+    flex: 1,
   },
 });

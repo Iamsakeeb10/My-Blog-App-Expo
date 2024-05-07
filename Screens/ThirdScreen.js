@@ -21,14 +21,14 @@ const ThirdScreen = ({ navigation }) => {
         {/* Go Back Icon Container */}
         <View>
           <IconButton
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation.replace("SecondScreen")}
             icon="arrow-back-outline"
             size={29}
             color="#303030"
           />
         </View>
         <View style={styles.innerContainer}>
-          {/* Header Container With Text And Kcon */}
+          {/* Header Container */}
           <View style={styles.headerContainer}>
             <Text style={styles.headerText}>Create your account</Text>
           </View>

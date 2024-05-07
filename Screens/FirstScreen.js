@@ -10,9 +10,7 @@ import {
 } from "react-native";
 import SwitchToggler from "../components/UI/SwitchToggler";
 
-const FirstScreen = () => {
-  // const [isSelected, setIsSelected] = useState(false);
-
+const FirstScreen = ({ navigation }) => {
   return (
     <View style={{ flex: 1 }}>
       <StatusBar barStyle="light-content" />
@@ -68,7 +66,10 @@ const FirstScreen = () => {
           </View>
           {/* Button Container */}
           <View style={styles.btnContainerOuter}>
-            <Pressable style={styles.btnContainerInner}>
+            <Pressable
+              onPress={() => navigation.replace("SecondScreen")}
+              style={styles.btnContainerInner}
+            >
               <Text style={styles.btnText}>SIGN IN WITH EMAIL</Text>
             </Pressable>
           </View>

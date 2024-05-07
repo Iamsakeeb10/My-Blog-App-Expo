@@ -138,6 +138,10 @@ const App = () => {
               name="Login"
               component={AuthContentScreen}
               options={{
+                headerShown: false,
+                headerStyle: {
+                  backgroundColor: "#fff",
+                },
                 contentStyle: {
                   backgroundColor: "#fff",
                 },
@@ -189,36 +193,6 @@ const App = () => {
               options={{
                 headerShown: false,
               }}
-              // options={{
-              //   headerRight: () => (
-              //     <View style={styles.dropdownContainer}>
-              //       <View style={styles.dropdown}>
-              //         {isOpenDropdown && (
-              //           <Picker
-              //             style={styles.picker}
-              //             selectedValue={selectedOption}
-              //             onValueChange={(itemValue) =>
-              //               handleOptionChange(itemValue)
-              //             }
-              //           >
-              //             <Picker.Item label="Id" value="postId" />
-              //             <Picker.Item label="Ascending" value="postAscending" />
-              //             <Picker.Item
-              //               label="Descending"
-              //               value="postDescending"
-              //             />
-              //           </Picker>
-              //         )}
-              //       </View>
-              //       <Pressable
-              //         onPress={toggleDropdown}
-              //         style={({ pressed }) => pressed && styles.pressed}
-              //       >
-              //         <Ionicons name="filter-outline" color="#fff" size={24} />
-              //       </Pressable>
-              //     </View>
-              //   ),
-              // }}
             />
 
             <Stack.Screen

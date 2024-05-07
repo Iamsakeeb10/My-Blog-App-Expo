@@ -18,7 +18,7 @@ const SecondScreen = ({ navigation }) => {
       {/* Go Back Icon Container */}
       <View>
         <IconButton
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.replace("FirstScreen")}
           icon="arrow-back-outline"
           size={29}
           color="#303030"
