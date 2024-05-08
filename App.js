@@ -6,7 +6,6 @@ import { useContext } from "react";
 import { StyleSheet, View } from "react-native";
 import FirstScreen from "./Screens/FirstScreen";
 import HomeScreen from "./Screens/HomeScreen";
-import SecondScreen from "./Screens/SecondScreen";
 import ThirdScreen from "./Screens/ThirdScreen";
 import UserProfile from "./Screens/UserProfileScreen";
 import WelcomeScreen from "./Screens/WelcomeScreen";
@@ -91,25 +90,13 @@ const DrawerNavigator = () => {
 };
 
 const App = () => {
-  // const [selectedOption, setSelectedOption] = useState("");
-
-  // const [isOpenDropdown, setIsOpenDropdown] = useState(false);
-
-  // function toggleDropdown() {
-  //   setIsOpenDropdown(!isOpenDropdown);
-  // }
-
-  // function handleOptionChange(itemValue) {
-  //   setSelectedOption(itemValue);
-  //   setIsOpenDropdown(false);
-  // }
-
   return (
     <View style={styles.rootContainer}>
       <StatusBar style="light" />
       <AuthContextProvider>
         <NavigationContainer>
           <Stack.Navigator
+            initialRouteName="FirstScreen"
             screenOptions={{
               headerStyle: {
                 backgroundColor: "#153448",
@@ -134,6 +121,7 @@ const App = () => {
                 },
               }}
             />
+
             <Stack.Screen
               name="Login"
               component={AuthContentScreen}
@@ -147,27 +135,12 @@ const App = () => {
                 },
               }}
             />
-
-            {/* First, Second & Third Screen... */}
             <Stack.Screen
               name="FirstScreen"
               component={FirstScreen}
               options={{
                 headerShown: false,
                 headerTitle: "First Screen",
-                contentStyle: {
-                  backgroundColor: "#fff",
-                },
-              }}
-            />
-            <Stack.Screen
-              name="SecondScreen"
-              component={SecondScreen}
-              options={{
-                headerShown: false,
-                headerStyle: {
-                  backgroundColor: "#fff",
-                },
                 contentStyle: {
                   backgroundColor: "#fff",
                 },

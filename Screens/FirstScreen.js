@@ -67,7 +67,7 @@ const FirstScreen = ({ navigation }) => {
           {/* Button Container */}
           <View style={styles.btnContainerOuter}>
             <Pressable
-              onPress={() => navigation.replace("SecondScreen")}
+              onPress={() => navigation.navigate("Login")}
               style={styles.btnContainerInner}
             >
               <Text style={styles.btnText}>SIGN IN WITH EMAIL</Text>

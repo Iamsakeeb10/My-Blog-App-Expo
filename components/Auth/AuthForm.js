@@ -24,6 +24,7 @@ const AuthForm = () => {
   const [validCredentials, setValidCredentials] = useState(false);
   const [invalidEmail, setInvalidEmail] = useState("");
   const [invalidPassword, setInvalidPassword] = useState("");
+  const [showPass, setShowPass] = useState(false);
 
   const { login, checkLoginStatus } = useContext(AuthContext);
 
@@ -36,6 +37,7 @@ const AuthForm = () => {
     setInvalidEmail(
       email.length > 32 ? "Email must be less than 32 characters" : null
     );
+
     return emailRegex.test(email);
   };
 
@@ -50,7 +52,7 @@ const AuthForm = () => {
 
   useEffect(() => {
     setValidCredentials(
-      validateEmail(inputValues.email) && validatePassword(inputValues.password)
+      validateEmail(inputValues.email) || validatePassword(inputValues.password)
     );
   }, [inputValues]);
 
@@ -63,37 +65,54 @@ const AuthForm = () => {
     });
   };
 
-  // Checking login status...
-  useEffect(() => {
-    checkLoginStatus();
-  }, []);
-
-  // const checkLoginStatus = async () => {
-  //   try {
-  //     const userData = await AsyncStorage.getItem("userData");
-  //     const parsedUserData = JSON.parse(userData);
-
-  //     if (parsedUserData && parsedUserData.access_token) {
-  //       navigation.replace("Drawer");
-  //     }
-  //   } catch (error) {
-  //     showToast(error.message);
-  //   }
-  // };
-
   const inputChangeHandler = (inputIdentifier, enteredValue) => {
     setInputValues((curInputValues) => {
-      return { ...curInputValues, [inputIdentifier]: enteredValue };
+      const updatedValues = {
+        ...curInputValues,
+        [inputIdentifier]: enteredValue,
+      };
+
+      return updatedValues;
     });
   };
 
   // Submitting data...
   const submitHandler = async () => {
-    if (invalidEmail || invalidPassword) {
-      return;
+    const { email, password } = inputValues;
+
+    const isEmailValid = validateEmail(email);
+    const isPasswordValid = validatePassword(password);
+
+    if (!isEmailValid) {
+      setInvalidEmail("Please enter a valid email address");
+    } else {
+      setInvalidEmail("");
     }
 
-    const { email, password } = inputValues;
+    if (!isPasswordValid) {
+      setInvalidPassword("Password must be at least 6 characters long");
+    } else {
+      setInvalidPassword("");
+    }
+
+    // Check if email and password are not empty
+    if (!email.trim()) {
+      setInvalidEmail(`Email field can't be empty`);
+    }
+
+    if (!password.trim()) {
+      setInvalidPassword("Password field can't be empty");
+    }
+
+    // If any error messages are set, return without submitting
+    if (
+      !isEmailValid ||
+      !isPasswordValid ||
+      !email.trim() ||
+      !password.trim()
+    ) {
+      return;
+    }
 
     try {
       const loginData = await loginUser(email, password);
@@ -109,6 +128,8 @@ const AuthForm = () => {
         };
 
         await login(userData);
+
+        await checkLoginStatus();
 
         navigation.replace("Drawer"); // Navigating to My Blogs screen...
       } else if (loginData && loginData.message) {
@@ -167,18 +188,24 @@ const AuthForm = () => {
           <Text style={styles.label}>Password</Text>
           <View style={styles.passwordContainer}>
             <TextInput
-              style={styles.input}
+              style={[styles.input, styles.passwordInput]}
               autoCapitalize="none"
-              secureTextEntry={true}
+              secureTextEntry={!showPass}
               placeholder="Enter password"
               placeholderTextColor="#BFBFBF"
               onChangeText={(value) => inputChangeHandler("password", value)}
               value={inputValues.password}
             />
-            <Image
-              source={require("../../assets/images/hidden.png")}
-              style={styles.eyeImg}
-            />
+            <Pressable onPress={() => setShowPass(!showPass)}>
+              <Image
+                source={
+                  !showPass
+                    ? require("../../assets/images/hidden.png")
+                    : require("../../assets/images/visibility.png")
+                }
+                style={styles.eyeImg}
+              />
+            </Pressable>
           </View>
           {invalidPassword && (
             <Text style={styles.errorText}>{invalidPassword}</Text>
@@ -191,12 +218,7 @@ const AuthForm = () => {
             invalidPassword ? { marginVertical: 10 } : styles.btnContainerOuter,
           ]}
         >
-          <AuthButton
-            onPress={validCredentials ? submitHandler : null}
-            disabled={!validCredentials}
-          >
-            SIGN IN
-          </AuthButton>
+          <AuthButton onPress={submitHandler}>SIGN IN</AuthButton>
         </View>
         {/* Forgot Password Text Container */}
         <View style={styles.forgotTextContainer}>
@@ -207,7 +229,7 @@ const AuthForm = () => {
           <View style={styles.createAccountContainer}>
             <Text style={styles.newToFinderText}>New to Finder? </Text>
             <Pressable
-              onPress={() => navigation.replace("ThirdScreen")}
+              onPress={() => navigation.navigate("ThirdScreen")}
               style={({ pressed }) => [
                 styles.createAccountText,
                 pressed && styles.pressed,
@@ -235,20 +257,6 @@ const styles = StyleSheet.create({
     marginLeft: 3,
   },
 
-  toastContainer: {
-    // marginTop: 150,
-  },
-
-  // text: {
-  //   textDecorationLine: "underline",
-  //   color: "#A0153E",
-  //   fontSize: 15,
-  // },
-
-  // authScreenContainer: {
-  //   alignItems: "center",
-  //   rowGap: 6,
-  // },
   container: {
     flex: 1,
     paddingVertical: 40,
@@ -275,7 +283,7 @@ const styles = StyleSheet.create({
   headerImg: {
     width: 24,
     height: 24,
-    marginBottom: 5,
+    marginBottom: 2,
   },
 
   subHeaderTextContainer: {
@@ -311,6 +319,11 @@ const styles = StyleSheet.create({
 
   passwordContainer: {
     position: "relative",
+    flexDirection: "row",
+  },
+
+  passwordInput: {
+    flex: 1,
   },
 
   eyeImg: {

@@ -13,6 +13,8 @@ const AuthContextProvider = ({ children }) => {
       const userData = await AsyncStorage.getItem("userData");
       const parsedUserData = JSON.parse(userData);
 
+      console.log("---userdata", userData);
+
       if (parsedUserData && parsedUserData.access_token) {
         setUser(parsedUserData);
       }
@@ -27,6 +29,9 @@ const AuthContextProvider = ({ children }) => {
   const login = async (userData) => {
     try {
       await AsyncStorage.setItem("userData", JSON.stringify(userData));
+
+      console.log("setting data -----", userData);
+
       setUser(userData);
     } catch (error) {
       console.log(error);

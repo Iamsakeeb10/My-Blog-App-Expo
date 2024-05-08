@@ -21,7 +21,7 @@ const ThirdScreen = ({ navigation }) => {
         {/* Go Back Icon Container */}
         <View>
           <IconButton
-            onPress={() => navigation.replace("SecondScreen")}
+            onPress={() => navigation.navigate("Login")}
             icon="arrow-back-outline"
             size={29}
             color="#303030"
@@ -143,7 +143,7 @@ const ThirdScreen = ({ navigation }) => {
                 Already have an Account?{" "}
               </Text>
               <Pressable
-                onPress={() => navigation.navigate("SecondScreen")}
+                onPress={() => navigation.replace("Login")}
                 style={({ pressed }) => [
                   styles.createAccountText,
                   pressed && styles.pressed,

@@ -1,15 +1,14 @@
 import React from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 
-const AuthButton = ({ children, onPress, disabled }) => {
+const AuthButton = ({ children, onPress }) => {
   return (
     <Pressable
       style={({ pressed }) => [
         styles.btnContainerInner,
         pressed && styles.pressed,
-        disabled && styles.disabled,
       ]}
-      onPress={disabled ? null : onPress}
+      onPress={onPress}
     >
       <Text style={styles.btnText}>{children}</Text>
     </Pressable>
@@ -34,9 +33,5 @@ const styles = StyleSheet.create({
 
   pressed: {
     opacity: 0.7,
-  },
-
-  disabled: {
-    backgroundColor: "rgba(217,70,56, 0.55)",
   },
 });
