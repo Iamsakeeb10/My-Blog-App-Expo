@@ -17,8 +17,8 @@ import IconButton from "../UI/IconButton";
 
 const AuthForm = () => {
   const [inputValues, setInputValues] = useState({
-    email: "",
-    password: "",
+    email: "estiak@finder-lbs.com",
+    password: "12345678",
   });
 
   const [validCredentials, setValidCredentials] = useState(false);
@@ -255,6 +255,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 10,
     marginLeft: 3,
+    fontFamily: "roboto-regular",
   },
 
   container: {

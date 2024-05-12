@@ -3,7 +3,7 @@
     "name": "my-blog-app",
     "slug": "my-blog-app",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "auto",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
@@ -29,6 +29,7 @@
       "eas": {
         "projectId": "51c71e7c-12aa-4377-815e-ab8e0fd1c584"
       }
-    }
+    },
+    "plugins": ["expo-font"]
   }
 }

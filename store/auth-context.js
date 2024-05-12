@@ -1,11 +1,14 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 
-export const AuthContext = createContext();
+export const AuthContext = createContext({
+  checkLoginStatus: () => {},
+  getUserData: () => null,
+});
 
 const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  console.log("user------", user);
 
   // Function to check if user is logged in
   const checkLoginStatus = async () => {
@@ -13,15 +16,13 @@ const AuthContextProvider = ({ children }) => {
       const userData = await AsyncStorage.getItem("userData");
       const parsedUserData = JSON.parse(userData);
 
-      console.log("---userdata", userData);
+      // console.log("---userdata", userData);
 
       if (parsedUserData && parsedUserData.access_token) {
         setUser(parsedUserData);
       }
     } catch (error) {
       console.log(error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -30,7 +31,7 @@ const AuthContextProvider = ({ children }) => {
     try {
       await AsyncStorage.setItem("userData", JSON.stringify(userData));
 
-      console.log("setting data -----", userData);
+      // console.log("setting data -----", userData);
 
       setUser(userData);
     } catch (error) {
@@ -53,9 +54,13 @@ const AuthContextProvider = ({ children }) => {
     return user;
   };
 
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
+
   return (
     <AuthContext.Provider
-      value={{ loading, login, logout, checkLoginStatus, getUserData }}
+      value={{ login, logout, checkLoginStatus, getUserData, user }}
     >
       {children}
     </AuthContext.Provider>

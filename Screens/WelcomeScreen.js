@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { useContext, useEffect } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
@@ -6,16 +5,14 @@ import { AuthContext } from "../store/auth-context";
 
 function WelcomeScreen() {
   const navigation = useNavigation();
-  const { checkLoginStatus } = useContext(AuthContext);
+  const { checkLoginStatus, user } = useContext(AuthContext);
 
   useEffect(() => {
-    const checkToken = async () => {
+    const checkToken = () => {
       try {
-        await checkLoginStatus();
-        const userData = await AsyncStorage.getItem("userData");
-        const parsedUserData = JSON.parse(userData);
+        checkLoginStatus();
 
-        if (parsedUserData && parsedUserData.access_token) {
+        if (user.access_token) {
           navigation.replace("Drawer");
         } else {
           navigation.replace("Login");
@@ -26,7 +23,7 @@ function WelcomeScreen() {
     };
 
     checkToken();
-  }, []);
+  }, [user, checkLoginStatus]);
 
   return (
     <View style={styles.container}>
