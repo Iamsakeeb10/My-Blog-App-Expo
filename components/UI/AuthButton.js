@@ -1,14 +1,16 @@
 import React from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 
-const AuthButton = ({ children, onPress }) => {
+const AuthButton = ({ children, onPress, style, loading }) => {
   return (
     <Pressable
       style={({ pressed }) => [
         styles.btnContainerInner,
         pressed && styles.pressed,
+        style,
       ]}
       onPress={onPress}
+      disabled={loading}
     >
       <Text style={styles.btnText}>{children}</Text>
     </Pressable>

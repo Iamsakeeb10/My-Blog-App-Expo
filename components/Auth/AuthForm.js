@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useContext, useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   Pressable,
   StatusBar,
@@ -18,13 +19,14 @@ import IconButton from "../UI/IconButton";
 const AuthForm = () => {
   const [inputValues, setInputValues] = useState({
     email: "estiak@finder-lbs.com",
-    password: "12345678",
+    password: "1234567",
   });
 
   const [validCredentials, setValidCredentials] = useState(false);
   const [invalidEmail, setInvalidEmail] = useState("");
   const [invalidPassword, setInvalidPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const { login, checkLoginStatus } = useContext(AuthContext);
 
@@ -115,6 +117,7 @@ const AuthForm = () => {
     }
 
     try {
+      setLoading(true);
       const loginData = await loginUser(email, password);
 
       if (loginData && loginData.access_token) {
@@ -138,6 +141,8 @@ const AuthForm = () => {
       }
     } catch (error) {
       showToast(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -218,7 +223,17 @@ const AuthForm = () => {
             invalidPassword ? { marginVertical: 10 } : styles.btnContainerOuter,
           ]}
         >
-          <AuthButton onPress={submitHandler}>SIGN IN</AuthButton>
+          <AuthButton
+            style={loading && styles.loadingBg}
+            onPress={submitHandler}
+            loading={loading}
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              "SIGN IN"
+            )}
+          </AuthButton>
         </View>
         {/* Forgot Password Text Container */}
         <View style={styles.forgotTextContainer}>
@@ -370,5 +385,9 @@ const styles = StyleSheet.create({
 
   pressed: {
     opacity: 0.7,
+  },
+
+  loadingBg: {
+    backgroundColor: "#A0130F",
   },
 });

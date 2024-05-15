@@ -5,25 +5,25 @@ import { AuthContext } from "../store/auth-context";
 
 function WelcomeScreen() {
   const navigation = useNavigation();
-  const { checkLoginStatus, user } = useContext(AuthContext);
+  const { checkLoginStatus } = useContext(AuthContext);
 
   useEffect(() => {
-    const checkToken = () => {
-      try {
-        checkLoginStatus();
+    const checkForLogin = async () => {
+      const userData = await checkLoginStatus();
 
-        if (user.access_token) {
+      try {
+        if (userData && userData.access_token) {
           navigation.replace("Drawer");
         } else {
-          navigation.replace("Login");
+          navigation.replace("FirstScreen");
         }
       } catch (error) {
         console.log(error);
       }
     };
 
-    checkToken();
-  }, [user, checkLoginStatus]);
+    checkForLogin();
+  }, []);
 
   return (
     <View style={styles.container}>

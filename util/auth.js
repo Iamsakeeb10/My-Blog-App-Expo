@@ -1,3 +1,5 @@
+const base_url = "http://dev23.finder.com.bd/api/v1";
+
 const url = "http://dev23.finder.com.bd/api/v1/users/login";
 
 export async function loginUser(email, password) {
@@ -53,4 +55,49 @@ const encodeBase64 = (input) => {
   }
 
   return output;
+};
+
+// Sending request for getting profile data...
+const get_url = "http://dev23.finder.com.bd/api/v1/users/customers/profile";
+
+export const fetchProfileData = async (user) => {
+  try {
+    const response = await fetch(get_url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${user.access_token}`,
+      },
+    });
+
+    const responseData = await response.json();
+    // console.log("profile data----------", responseData);
+
+    return responseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const patch_url = base_url + "/users/customers/profile/change-password";
+
+export const changeUserPassword = async (curPass, newPass, user) => {
+  const requestBody = {
+    current_password: encodeBase64(curPass),
+    new_password: encodeBase64(newPass),
+  };
+
+  try {
+    const response = await fetch(patch_url, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.access_token}`,
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    return response;
+  } catch (error) {
+    console.log("pasError------", error);
+  }
 };

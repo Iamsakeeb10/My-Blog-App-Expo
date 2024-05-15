@@ -1,14 +1,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
 
-export const AuthContext = createContext({
-  checkLoginStatus: () => {},
-  getUserData: () => null,
-});
+export const AuthContext = createContext();
 
 const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  console.log("user------", user);
+  // console.log("Myuser------", user);
 
   // Function to check if user is logged in
   const checkLoginStatus = async () => {
@@ -21,6 +18,7 @@ const AuthContextProvider = ({ children }) => {
       if (parsedUserData && parsedUserData.access_token) {
         setUser(parsedUserData);
       }
+      return parsedUserData;
     } catch (error) {
       console.log(error);
     }
@@ -54,9 +52,9 @@ const AuthContextProvider = ({ children }) => {
     return user;
   };
 
-  useEffect(() => {
-    checkLoginStatus();
-  }, []);
+  // useEffect(() => {
+  //   checkLoginStatus();
+  // }, []);
 
   return (
     <AuthContext.Provider

@@ -4,10 +4,19 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import { useContext } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  StyleSheet,
+  View,
+} from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import AboutScreen from "./Screens/AboutScreen";
+import ChangePasswordScreen from "./Screens/ChangePasswordScreen";
 import DrawerContent from "./Screens/CustomDrawer/DrawerContent";
 import DriverScreen from "./Screens/DriverScreen";
+import EditProfileScreen from "./Screens/EditProfileScreen";
 import FirstScreen from "./Screens/FirstScreen";
 import GeoFenceScreen from "./Screens/GeoFenceScreen";
 import HelpSupportScreen from "./Screens/HelpSupportScreen";
@@ -19,6 +28,7 @@ import SettingScreen from "./Screens/SettingScreen";
 import ShopScreen from "./Screens/ShopScreen";
 import ThirdScreen from "./Screens/ThirdScreen";
 import UserProfileScreen from "./Screens/UserProfileScreen";
+import VerificationScreen from "./Screens/VerificationScreen";
 import WelcomeScreen from "./Screens/WelcomeScreen";
 import AuthContentScreen from "./components/Auth/AuthContentScreen";
 import BlogDetails from "./components/BlogDetail/BlogDetails";
@@ -224,100 +234,203 @@ const App = () => {
   }
 
   return (
-    <AuthContextProvider>
-      <StatusBar style="light" />
-      <View style={styles.rootContainer}>
-        <NavigationContainer>
-          <Stack.Navigator
-            screenOptions={{
-              headerStyle: {
-                backgroundColor: "#153448",
-              },
-              contentStyle: {
-                backgroundColor: "#B6C4B6",
-              },
-              headerTitleStyle: {
-                color: "#EEEEEE",
-                fontSize: 21,
-              },
-              headerTintColor: "#EEEEEE",
-            }}
-          >
-            <Stack.Screen
-              name="Welcome"
-              component={WelcomeScreen}
-              options={{
-                headerShown: false,
-                contentStyle: {
-                  backgroundColor: "#fff",
-                },
-              }}
-            />
-            <Stack.Screen
-              name="FirstScreen"
-              component={FirstScreen}
-              options={{
-                headerShown: false,
-                headerTitle: "First Screen",
-                contentStyle: {
-                  backgroundColor: "#fff",
-                },
-              }}
-            />
-            <Stack.Screen
-              name="Login"
-              component={AuthContentScreen}
-              options={{
-                headerShown: false,
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AuthContextProvider>
+        <StatusBar style="light" />
+        <View style={styles.rootContainer}>
+          <NavigationContainer>
+            <Stack.Navigator
+              screenOptions={{
                 headerStyle: {
-                  backgroundColor: "#fff",
+                  backgroundColor: "#153448",
                 },
                 contentStyle: {
-                  backgroundColor: "#fff",
+                  backgroundColor: "#B6C4B6",
                 },
-              }}
-            />
-            <Stack.Screen
-              name="Drawer"
-              options={{
-                headerShown: false,
+                headerTitleStyle: {
+                  color: "#EEEEEE",
+                  fontSize: 21,
+                },
+                headerTintColor: "#EEEEEE",
               }}
             >
-              {() => <DrawerNavigator />}
-            </Stack.Screen>
-            <Stack.Screen
-              name="ThirdScreen"
-              component={ThirdScreen}
-              options={{
-                headerShown: false,
-                headerStyle: {
-                  backgroundColor: "#fff",
-                },
-                contentStyle: {
-                  backgroundColor: "#fff",
-                },
-              }}
-            />
-            <Stack.Screen
-              name="BlogDetails"
-              component={BlogDetails}
-              options={({ navigation }) => ({
-                headerLeft: ({ tintColor }) => (
-                  <IconButton
-                    icon="return-up-back-outline"
-                    size={24}
-                    color={tintColor}
-                    onPress={() => navigation.goBack()}
-                  />
-                ),
-                headerTitleAlign: "center",
-                title: "Blog Insights",
-              })}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </View>
-    </AuthContextProvider>
+              <Stack.Screen
+                name="Welcome"
+                component={WelcomeScreen}
+                options={{
+                  headerShown: false,
+                  contentStyle: {
+                    backgroundColor: "#fff",
+                  },
+                }}
+              />
+              <Stack.Screen
+                name="FirstScreen"
+                component={FirstScreen}
+                options={{
+                  headerShown: false,
+                  headerTitle: "First Screen",
+                  contentStyle: {
+                    backgroundColor: "#fff",
+                  },
+                }}
+              />
+              <Stack.Screen
+                name="Login"
+                component={AuthContentScreen}
+                options={{
+                  headerShown: false,
+                  headerStyle: {
+                    backgroundColor: "#fff",
+                  },
+                  contentStyle: {
+                    backgroundColor: "#fff",
+                  },
+                }}
+              />
+              <Stack.Screen
+                name="Drawer"
+                options={{
+                  headerShown: false,
+                }}
+              >
+                {() => <DrawerNavigator />}
+              </Stack.Screen>
+              <Stack.Screen
+                name="ThirdScreen"
+                component={ThirdScreen}
+                options={{
+                  headerShown: false,
+                  headerStyle: {
+                    backgroundColor: "#fff",
+                  },
+                  contentStyle: {
+                    backgroundColor: "#fff",
+                  },
+                }}
+              />
+              <Stack.Screen
+                name="BlogDetails"
+                component={BlogDetails}
+                options={({ navigation }) => ({
+                  headerLeft: ({ tintColor }) => (
+                    <IconButton
+                      icon="return-up-back-outline"
+                      size={24}
+                      color={tintColor}
+                      onPress={() => navigation.goBack()}
+                    />
+                  ),
+                  headerTitleAlign: "center",
+                  title: "Blog Insights",
+                })}
+              />
+              <Stack.Screen
+                name="EditProfileScreen"
+                component={EditProfileScreen}
+                options={({ navigation }) => ({
+                  headerStyle: {
+                    backgroundColor: "#FFF",
+                  },
+
+                  headerTitleStyle: {
+                    color: "#1E1F20",
+                    fontSize: 15,
+                    fontFamily: "roboto-semi",
+                  },
+
+                  headerShadowVisible: false,
+
+                  headerTitle: "Edit Profile",
+
+                  headerTitleAlign: "center",
+
+                  contentStyle: {
+                    backgroundColor: "#FAFAFA",
+                  },
+
+                  headerLeft: () => (
+                    <Pressable onPress={() => navigation.goBack()}>
+                      <Image
+                        style={styles.arrowIcon}
+                        source={require("./assets/UserProfileScreenImages/EditProfileScreenIcons/left-arrow.png")}
+                      />
+                    </Pressable>
+                  ),
+                })}
+              />
+              <Stack.Screen
+                name="ChangePasswordScreen"
+                component={ChangePasswordScreen}
+                options={({ navigation }) => ({
+                  headerStyle: {
+                    backgroundColor: "#FFF",
+                  },
+
+                  headerTitleStyle: {
+                    color: "#1E1F20",
+                    fontSize: 15,
+                    fontFamily: "roboto-semi",
+                  },
+
+                  headerShadowVisible: false,
+
+                  headerTitle: "Change Password",
+
+                  headerTitleAlign: "center",
+
+                  contentStyle: {
+                    backgroundColor: "#FAFAFA",
+                  },
+
+                  headerLeft: () => (
+                    <Pressable onPress={() => navigation.goBack()}>
+                      <Image
+                        style={styles.arrowIcon}
+                        source={require("./assets/UserProfileScreenImages/EditProfileScreenIcons/left-arrow.png")}
+                      />
+                    </Pressable>
+                  ),
+                })}
+              />
+
+              {/* Disabled screen till now - Need to add navigate or replace to navigate to this screen.... */}
+              <Stack.Screen
+                name="VerificationScreen"
+                component={VerificationScreen}
+                options={({ navigation }) => ({
+                  headerStyle: {
+                    backgroundColor: "#FFF",
+                  },
+
+                  headerTitle: "",
+
+                  headerShadowVisible: false,
+
+                  contentStyle: {
+                    backgroundColor: "#FAFAFA",
+                  },
+
+                  headerLeft: () => (
+                    <View>
+                      <Pressable
+                        style={({ pressed }) => [pressed && { opacity: 0.7 }]}
+                        onPress={() => navigation.goBack()}
+                      >
+                        <Image
+                          style={styles.closeIcon}
+                          source={require("./assets/VerificationScreenIcons/Close.png")}
+                        />
+                      </Pressable>
+                    </View>
+                  ),
+                })}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </View>
+      </AuthContextProvider>
+    </GestureHandlerRootView>
   );
 };
 
@@ -336,4 +449,74 @@ const styles = StyleSheet.create({
     width: 23,
     height: 23,
   },
+
+  arrowIcon: {
+    width: 23,
+    height: 23,
+  },
+
+  closeIcon: {
+    width: 23,
+    height: 23,
+    marginTop: 8,
+  },
 });
+
+// import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+
+// import React, { useRef } from "react";
+// import { Button, StyleSheet, Text, View } from "react-native";
+// import { GestureHandlerRootView } from "react-native-gesture-handler";
+
+// const App = () => {
+//   const bottomSheetRef = useRef(null);
+
+//   // Snap points for the bottom sheet
+//   const snapPoints = ["20%", "50%", "90%"];
+
+//   return (
+//     <GestureHandlerRootView style={styles.container}>
+//       <BottomSheet snapPoints={snapPoints} ref={bottomSheetRef}>
+//         <BottomSheetView style={styles.bottomSheetContent}>
+//           <Text style={styles.text}>Bottom Sheet Content</Text>
+//           <Button
+//             title="Close Bottom Sheet"
+//             onPress={() => bottomSheetRef.current?.close()}
+//           />
+//         </BottomSheetView>
+//       </BottomSheet>
+//       <View style={styles.contentContainer}>
+//         <Text style={styles.text}>Main Content</Text>
+//         <Button
+//           title="Open Bottom Sheet"
+//           onPress={() => bottomSheetRef.current?.expand()}
+//         />
+//       </View>
+//     </GestureHandlerRootView>
+//   );
+// };
+
+// export default App;
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: "#ccc",
+//   },
+//   contentContainer: {
+//     flex: 1,
+//     justifyContent: "center",
+//     alignItems: "center",
+//   },
+//   bottomSheetContent: {
+//     backgroundColor: "#fff",
+//     padding: 16,
+//     borderTopLeftRadius: 20,
+//     borderTopRightRadius: 20,
+//   },
+//   text: {
+//     fontSize: 20,
+//     fontWeight: "bold",
+//     textAlign: "center",
+//   },
+// });

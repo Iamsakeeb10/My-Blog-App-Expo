@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  StatusBar,
   StyleSheet,
   Text,
   View,
@@ -71,6 +72,7 @@ const HomeScreen = ({ selectedDropdownOptionRef }) => {
 
   return (
     <View style={{ flex: 1 }}>
+      <StatusBar barStyle="light-content" />
       <FlatList
         data={posts}
         renderItem={({ item, index }) => {
