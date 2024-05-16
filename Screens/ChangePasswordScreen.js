@@ -9,8 +9,8 @@ import {
   TextInput,
   View,
 } from "react-native";
-import AwesomeAlert from "react-native-awesome-alerts";
 import Toast from "react-native-toast-message";
+import Alert from "../components/UI/Alert";
 import { AuthContext } from "../store/auth-context";
 import { changeUserPassword } from "../util/auth";
 
@@ -304,42 +304,11 @@ const ChangePasswordScreen = ({ navigation }) => {
         <Toast />
       </View>
       <View style={styles.alertContainer}>
-        <AwesomeAlert
-          show={showAlert}
-          showProgress={false}
+        <Alert
           title="Password Updated"
-          message="Your password has been changed successfully. "
-          closeOnTouchOutside={true}
-          closeOnHardwareBackPress={true}
-          showConfirmButton={true}
-          confirmText="Okay"
-          onCancelPressed={hideAlertFunc}
-          onConfirmPressed={hideAlertFunc}
-          alertContainerStyle={{
-            backgroundColor: "rgba(0,0,0,0.1)",
-          }}
-          titleStyle={{
-            color: "#151312",
-            fontSize: 20,
-            fontFamily: "roboto-semi",
-          }}
-          messageStyle={{
-            color: "#7B7B7B",
-            fontSize: 14,
-            fontFamily: "roboto-regular",
-            textAlign: "center",
-          }}
-          contentContainerStyle={{
-            borderRadius: 17,
-          }}
-          confirmButtonStyle={{
-            backgroundColor: "transparent",
-          }}
-          confirmButtonTextStyle={{
-            color: "#D94638",
-            fontSize: 17,
-            fontFamily: "roboto-semi",
-          }}
+          message="Your password has been changed successfully"
+          showAlert={showAlert}
+          hideAlertFunc={hideAlertFunc}
         />
       </View>
     </View>

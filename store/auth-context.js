@@ -5,6 +5,7 @@ export const AuthContext = createContext();
 
 const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [fullNameData, setFullNameData] = useState();
   // console.log("Myuser------", user);
 
   // Function to check if user is logged in
@@ -52,13 +53,22 @@ const AuthContextProvider = ({ children }) => {
     return user;
   };
 
-  // useEffect(() => {
-  //   checkLoginStatus();
-  // }, []);
+  const fullNameDataFunc = (data) => {
+    const newName = data?.data?.name;
+    setFullNameData(newName);
+  };
 
   return (
     <AuthContext.Provider
-      value={{ login, logout, checkLoginStatus, getUserData, user }}
+      value={{
+        login,
+        logout,
+        checkLoginStatus,
+        getUserData,
+        user,
+        fullNameDataFunc,
+        fullNameData,
+      }}
     >
       {children}
     </AuthContext.Provider>

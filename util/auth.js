@@ -78,6 +78,7 @@ export const fetchProfileData = async (user) => {
   }
 };
 
+// Change password api req...
 const patch_url = base_url + "/users/customers/profile/change-password";
 
 export const changeUserPassword = async (curPass, newPass, user) => {
@@ -99,5 +100,32 @@ export const changeUserPassword = async (curPass, newPass, user) => {
     return response;
   } catch (error) {
     console.log("pasError------", error);
+  }
+};
+
+// Change email api req...
+
+const email_change_url = base_url + "/users/customers/profile";
+
+export const changeFullName = async (fullName, user) => {
+  const payload = {
+    name: fullName,
+  };
+
+  try {
+    const response = await fetch(email_change_url, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.access_token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.log(error);
   }
 };

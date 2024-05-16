@@ -13,10 +13,13 @@ import IconButton from "../components/UI/IconButton";
 import { AuthContext } from "../store/auth-context";
 import { fetchProfileData } from "../util/auth";
 
-const UserProfileScreen = ({ navigation }) => {
+const UserProfileScreen = ({ navigation, route }) => {
   const [userProfile, setUserProfile] = useState(null);
+  console.log("----userprofile", userProfile);
+
   const [loading, setIsLoading] = useState(true);
-  const { user } = useContext(AuthContext);
+  const { user, fullNameData } = useContext(AuthContext);
+  console.log("fulldata-------", fullNameData);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -29,6 +32,17 @@ const UserProfileScreen = ({ navigation }) => {
 
     fetchProfile();
   }, [user]);
+
+  useEffect(() => {
+    if (userProfile && fullNameData) {
+      setUserProfile((prevData) => {
+        return {
+          ...prevData,
+          name: fullNameData,
+        };
+      });
+    }
+  }, [fullNameData]);
 
   if (loading) {
     return (
@@ -84,7 +98,7 @@ const UserProfileScreen = ({ navigation }) => {
   if (userProfile && userProfile.email && !userProfile.is_email_verified) {
     profileNotVerified = (
       <View style={styles.profileNameContainer}>
-        <Text style={styles.profileName}>Estiak Ahmed</Text>
+        <Text style={styles.profileName}>{userProfile.name}</Text>
         <Text
           style={{ flexDirection: "row", alignItems: "center", columnGap: 4 }}
         >
@@ -114,7 +128,7 @@ const UserProfileScreen = ({ navigation }) => {
   if (userProfile && userProfile.mobile && !userProfile.is_mobile_verified) {
     profileNotVerified = (
       <View style={styles.profileNameContainer}>
-        <Text style={styles.profileName}>Estiak Ahmed</Text>
+        <Text style={styles.profileName}>{userProfile.name}</Text>
         <View
           style={{ flexDirection: "row", alignItems: "center", columnGap: 4 }}
         >
@@ -155,7 +169,7 @@ const UserProfileScreen = ({ navigation }) => {
   ) {
     profileNotVerified = (
       <View style={styles.profileNameContainer}>
-        <Text style={styles.profileName}>Estiak Ahmed</Text>
+        <Text style={styles.profileName}>{userProfile.name}</Text>
         <View
           style={{ flexDirection: "row", alignItems: "center", columnGap: 4 }}
         >
@@ -195,7 +209,7 @@ const UserProfileScreen = ({ navigation }) => {
   ) {
     profileNotVerified = (
       <View style={styles.profileNameContainer}>
-        <Text style={styles.profileName}>Estiak Ahmed</Text>
+        <Text style={styles.profileName}>{userProfile.name}</Text>
         <View
           style={{ flexDirection: "row", alignItems: "center", columnGap: 4 }}
         >
@@ -227,7 +241,7 @@ const UserProfileScreen = ({ navigation }) => {
   ) {
     profileNotVerified = (
       <View style={styles.profileNameContainer}>
-        <Text style={styles.profileName}>Estiak Ahmed</Text>
+        <Text style={styles.profileName}>{userProfile.name}</Text>
         <Text style={[styles.verificationText]}>
           <View
             style={{ flexDirection: "row", alignItems: "center", columnGap: 4 }}
@@ -254,7 +268,10 @@ const UserProfileScreen = ({ navigation }) => {
     profileNotVerified = (
       <View style={styles.profileNameContainer}>
         <Text style={styles.profileName}>
-          {userProfile.name.charAt(0).toUpperCase() + userProfile.name.slice(1)}
+          {userProfile
+            ? userProfile.name?.charAt(0).toUpperCase() +
+              userProfile.name?.slice(1)
+            : ""}
         </Text>
         <Text style={emailIsValid}>{userProfile.email}</Text>
         <Text style={mobileIsValid}>{userProfile.mobile}</Text>
@@ -284,7 +301,11 @@ const UserProfileScreen = ({ navigation }) => {
       {/* ***************** */}
       <View style={styles.footerContainer}>
         <Pressable
-          onPress={() => navigation.navigate("EditProfileScreen")}
+          onPress={() =>
+            navigation.navigate("EditProfileScreen", {
+              userProfile: userProfile,
+            })
+          }
           style={({ pressed }) => pressed && styles.pressed}
         >
           <View style={styles.drawerItemContainer}>
