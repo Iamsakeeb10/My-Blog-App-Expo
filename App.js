@@ -17,6 +17,7 @@ import ChangePasswordScreen from "./Screens/ChangePasswordScreen";
 import DrawerContent from "./Screens/CustomDrawer/DrawerContent";
 import DriverScreen from "./Screens/DriverScreen";
 import EditProfileScreen from "./Screens/EditProfileScreen";
+import EnterNewEmailScreen from "./Screens/EnterNewEmailScreen";
 import FirstScreen from "./Screens/FirstScreen";
 import GeoFenceScreen from "./Screens/GeoFenceScreen";
 import HelpSupportScreen from "./Screens/HelpSupportScreen";
@@ -374,6 +375,10 @@ const App = () => {
                   />
                 )}
               </Stack.Screen>
+              <Stack.Screen
+                name="ChangeEmailScreen"
+                component={EnterNewEmailScreen}
+              />
               <Stack.Screen
                 name="ChangePasswordScreen"
                 component={ChangePasswordScreen}

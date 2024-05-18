@@ -103,9 +103,9 @@ export const changeUserPassword = async (curPass, newPass, user) => {
   }
 };
 
-// Change email api req...
+// Change full name api req...
 
-const email_change_url = base_url + "/users/customers/profile";
+const name_change_url = base_url + "/users/customers/profile";
 
 export const changeFullName = async (fullName, user) => {
   const payload = {
@@ -113,7 +113,7 @@ export const changeFullName = async (fullName, user) => {
   };
 
   try {
-    const response = await fetch(email_change_url, {
+    const response = await fetch(name_change_url, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -125,6 +125,39 @@ export const changeFullName = async (fullName, user) => {
     const data = await response.json();
 
     return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// Change email api req...
+
+// base_url + '/users/password-verification'
+// method: post
+// payload: {
+//           'password': password,
+//           'verification_reason': 'email-change',
+//         }
+
+const change_email_url = base_url + "/users/password-verification";
+
+export const bottomSheetChangePassword = async (password, user) => {
+  const payload = {
+    password: encodeBase64(password),
+    verification_reason: "email-change",
+  };
+
+  try {
+    const response = await fetch(change_email_url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.access_token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    return response;
   } catch (error) {
     console.log(error);
   }

@@ -1,5 +1,5 @@
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import React, { useContext, useRef, useState } from "react";
 import {
   Image,
@@ -15,24 +15,34 @@ import Toast from "react-native-toast-message";
 import Alert from "../components/UI/Alert";
 import AuthButton from "../components/UI/AuthButton";
 import { AuthContext } from "../store/auth-context";
-import { changeFullName } from "../util/auth";
+import { bottomSheetChangePassword, changeFullName } from "../util/auth";
 
 const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
+  const navigation = useNavigation();
   const bottomSheetRef = useRef(null);
   const route = useRoute();
   const { userProfile } = route.params;
-  // console.log("roueData-------", userProfile);
   const { user, fullNameDataFunc } = useContext(AuthContext);
 
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [snapPoints, setSnapPoints] = useState(["50%", "70%"]);
   const [bottomSheetIndex, setBottomSheetIndex] = useState(-1);
+  // Input values state including full name, email and mobile number...
   const [inputValues, setInputValues] = useState({
     userFullName: userProfile && userProfile.name,
   });
+
+  // Bottom sheet email input state...
+  const [bottomSheetPasswordInput, setBottomSheetPasswordInput] = useState("");
+
+  // Bottom sheet email input error state...
+  const [bottomSheetPasswordInputError, setBottomSheetPasswordInputError] =
+    useState("");
+
   // Error state
   const [nameError, setNameError] = useState("");
   const [showAlert, setShowAlert] = useState(false);
+
+  // Functions.....****
 
   // Showing alert
   const showAlertFunc = () => {
@@ -56,14 +66,12 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
   const openBottomSheet = () => {
     setBottomSheetIndex(0);
     bottomSheetRef.current?.expand();
-    setIsBottomSheetOpen(true);
     isBottomSheetOpenYet(true);
   };
 
   const closeBottomSheet = () => {
     setBottomSheetIndex(-1);
     bottomSheetRef.current?.close();
-    setIsBottomSheetOpen(false);
     isBottomSheetOpenYet(false);
   };
 
@@ -75,6 +83,16 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
     isBottomSheetOpenYet(false);
   };
 
+  // Bottom sheet input handler...
+  const bottomSheetEmailInputHandler = (enteredValue) => {
+    setBottomSheetPasswordInput(enteredValue);
+
+    if (bottomSheetPasswordInputError) {
+      setBottomSheetPasswordInputError("");
+    }
+  };
+
+  // Editing values input handler...
   const inputChangeHandler = (identifier, enteredValue) => {
     setInputValues((prevValues) => {
       return {
@@ -88,7 +106,7 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
     const { userFullName } = inputValues;
 
     if (!userFullName.trim()) {
-      setNameError("Enter a valid name");
+      setNameError(`Field can't be empty`);
       return;
     } else {
       setNameError("");
@@ -96,7 +114,6 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
 
     if (userProfile && userProfile.name.trim() === userFullName.trim()) {
       showToast("Name already in use");
-      console.log("Name error");
 
       return;
     }
@@ -105,10 +122,47 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
       const data = await changeFullName(userFullName, user);
       showAlertFunc();
       fullNameDataFunc(data);
-      console.log("name-----------", data.data.name);
-      console.log(data);
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  // Bottom sheet password change handler function
+  const saveEnterPasswordHandler = async () => {
+    if (!bottomSheetPasswordInput.trim()) {
+      setBottomSheetPasswordInputError(`Password field can't be empty`);
+    } else if (bottomSheetPasswordInput.trim().length < 6) {
+      setBottomSheetPasswordInputError(
+        `Password must be at least 6 characters`
+      );
+    } else if (bottomSheetPasswordInput.trim().length > 20) {
+      setBottomSheetPasswordInputError(
+        `Password must be less than 20 characters`
+      );
+    } else {
+      setBottomSheetPasswordInputError("");
+    }
+
+    const password = bottomSheetPasswordInput.trim();
+    if (!password || password.length < 6 || password.length > 20) {
+      return;
+    }
+
+    try {
+      const response = await bottomSheetChangePassword(password, user);
+
+      const data = await response.json();
+      console.log(data);
+
+      if (data && data.message) {
+        showToast(data.message);
+      }
+
+      if (response.ok) {
+        navigation.navigate("ChangeEmailScreen");
+      }
+    } catch (error) {
+      console.error("Error changing password:", error);
     }
   };
 
@@ -249,7 +303,12 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
                   />
                 </Pressable>
               </View>
-              <View style={{ flex: 0, marginTop: 4 }}>
+              <View
+                style={{
+                  flex: 0,
+                  marginTop: bottomSheetPasswordInputError ? "2" : 4,
+                }}
+              >
                 <Text
                   style={{
                     fontSize: 19,
@@ -290,13 +349,16 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
                   to change this email address
                 </Text>
               </View>
-              <View style={{ marginTop: 10 }}>
+              <View
+                style={{ marginTop: bottomSheetPasswordInputError ? 2 : 10 }}
+              >
                 <Text
                   style={{ color: "#151312", marginBottom: 4, fontSize: 13 }}
                 >
-                  New Email Address
+                  Password
                 </Text>
                 <TextInput
+                  onChangeText={bottomSheetEmailInputHandler}
                   style={{
                     paddingLeft: 17,
                     width: 312,
@@ -308,12 +370,30 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
                     fontFamily: "roboto-regular",
                   }}
                   placeholderTextColor="#A3A3A3"
-                  placeholder="Enter new email"
+                  placeholder="Enter your password"
                   onFocus={handleFocus}
+                  value={bottomSheetPasswordInput}
                 />
               </View>
-              <View style={{ flex: 1, marginTop: 10 }}>
-                <AuthButton>NEXT</AuthButton>
+              {bottomSheetPasswordInputError ? (
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontFamily: "roboto-regular",
+                    color: "#D2042D",
+                    marginTop: 3,
+                  }}
+                >
+                  {bottomSheetPasswordInputError}
+                </Text>
+              ) : null}
+              <View
+                style={{
+                  flex: 1,
+                  marginTop: bottomSheetPasswordInputError ? 8 : 10,
+                }}
+              >
+                <AuthButton onPress={saveEnterPasswordHandler}>NEXT</AuthButton>
               </View>
             </BottomSheetView>
           </KeyboardAvoidingView>

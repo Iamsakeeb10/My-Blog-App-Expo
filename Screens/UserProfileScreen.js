@@ -15,11 +15,9 @@ import { fetchProfileData } from "../util/auth";
 
 const UserProfileScreen = ({ navigation, route }) => {
   const [userProfile, setUserProfile] = useState(null);
-  console.log("----userprofile", userProfile);
 
   const [loading, setIsLoading] = useState(true);
   const { user, fullNameData } = useContext(AuthContext);
-  console.log("fulldata-------", fullNameData);
 
   useEffect(() => {
     const fetchProfile = async () => {

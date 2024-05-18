@@ -6,7 +6,6 @@ export const AuthContext = createContext();
 const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [fullNameData, setFullNameData] = useState();
-  // console.log("Myuser------", user);
 
   // Function to check if user is logged in
   const checkLoginStatus = async () => {
