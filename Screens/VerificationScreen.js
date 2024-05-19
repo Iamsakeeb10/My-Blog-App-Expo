@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import {
   CodeField,
@@ -6,17 +6,58 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from "react-native-confirmation-code-field";
+import { AuthContext } from "../store/auth-context";
 import AuthButton from "./../components/UI/AuthButton";
 
 const CELL_COUNT = 6;
 
-const VerificationScreen = () => {
+const VerificationScreen = ({ route }) => {
   const [value, setValue] = useState("");
+  const [codeError, setCodeError] = useState("");
+
+  const { updatedEmail } = useContext(AuthContext);
+  // Necessary for sending api req....
+  const userId = route.params.userId;
+  console.log(userId);
+
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
   const [props, getCellOnLayoutHandler] = useClearByFocusCell({
     value,
     setValue,
   });
+
+  const codeChangeHandler = (enteredValue) => {
+    setValue(enteredValue);
+
+    if (codeError) {
+      setCodeError("");
+    }
+  };
+
+  const verifyCodeHandler = () => {
+    const trimmedValue = value.trim();
+
+    if (!trimmedValue) {
+      setCodeError(`Field can't be empty`);
+      return;
+    }
+
+    if (trimmedValue.length !== 6) {
+      setCodeError("Empty field found");
+      return;
+    }
+
+    const isValid = /^\d+$/.test(value);
+
+    if (!isValid) {
+      setCodeError("Numbers required");
+      return;
+    }
+
+    setCodeError("");
+
+    console.log("value--****", value);
+  };
 
   return (
     <View style={styles.rootContainer}>
@@ -25,7 +66,7 @@ const VerificationScreen = () => {
       </View>
       <View style={{ marginTop: 2 }}>
         <Text style={styles.verificationTextSmall}>
-          We sent a security coe to <Text>reaz@finder-lbs.com</Text>
+          We sent a security code to <Text>{updatedEmail}</Text>
         </Text>
       </View>
       <View>
@@ -33,27 +74,45 @@ const VerificationScreen = () => {
           You may need to check your junk or Spam folder
         </Text>
       </View>
-      <View style={styles.otpFieldContainer}>
-        <CodeField
-          ref={ref}
-          {...props}
-          value={value}
-          onChangeText={setValue}
-          cellCount={CELL_COUNT}
-          keyboardType="number-pad"
-          renderCell={({ index, symbol, isFocused }) => (
-            <Text
-              key={index}
-              style={[styles.cell, isFocused && styles.focusCell]}
-              onLayout={getCellOnLayoutHandler(index)}
-            >
-              {symbol || (isFocused ? <Cursor /> : null)}
-            </Text>
-          )}
-        />
+      <View
+        style={[
+          styles.otpFieldContainer,
+          { marginVertical: codeError ? 20 : 26 },
+        ]}
+      >
+        <View>
+          <CodeField
+            ref={ref}
+            {...props}
+            value={value}
+            onChangeText={codeChangeHandler}
+            cellCount={CELL_COUNT}
+            keyboardType="number-pad"
+            renderCell={({ index, symbol, isFocused }) => (
+              <Text
+                key={index}
+                style={[
+                  styles.cell,
+                  isFocused ? styles.focusCell : null,
+                  index < value.length && /^\d+$/.test(value[index])
+                    ? styles.validCell
+                    : index === value.length && /^\d+$/.test(symbol)
+                    ? styles.pendingCell
+                    : symbol
+                    ? styles.errorCell
+                    : styles.defaultCell,
+                ]}
+                onLayout={getCellOnLayoutHandler(index)}
+              >
+                {symbol || (!codeError && isFocused ? <Cursor /> : null)}
+              </Text>
+            )}
+          />
+          {codeError ? <Text style={styles.errorText}>{codeError}</Text> : ""}
+        </View>
       </View>
       <View>
-        <AuthButton>VERIFY</AuthButton>
+        <AuthButton onPress={verifyCodeHandler}>VERIFY</AuthButton>
       </View>
       <View style={styles.footerContainer}>
         <Text style={styles.footerText}>
@@ -73,6 +132,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
 
+  validCell: {
+    borderColor: "green",
+  },
+  pendingCell: {
+    borderColor: "#D6D6D6",
+  },
+  errorCell: {
+    borderColor: "#E87B09",
+  },
+
+  errorText: {
+    color: "#D2042D",
+    fontSize: 12,
+    marginTop: 8,
+    marginLeft: 3,
+    fontFamily: "roboto-regular",
+    textAlign: "center",
+  },
+
   verificationText: {
     fontFamily: "roboto-semi",
     fontSize: 21,
@@ -80,7 +158,6 @@ const styles = StyleSheet.create({
   },
 
   otpFieldContainer: {
-    marginVertical: 26,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",

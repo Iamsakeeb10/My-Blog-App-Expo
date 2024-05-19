@@ -6,6 +6,7 @@ export const AuthContext = createContext();
 const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [fullNameData, setFullNameData] = useState();
+  const [updatedEmail, setUpdatedEmail] = useState(null);
 
   // Function to check if user is logged in
   const checkLoginStatus = async () => {
@@ -57,6 +58,11 @@ const AuthContextProvider = ({ children }) => {
     setFullNameData(newName);
   };
 
+  // New email function
+  const getUpdatedEmail = (updatedEmail) => {
+    setUpdatedEmail(updatedEmail);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -67,6 +73,8 @@ const AuthContextProvider = ({ children }) => {
         user,
         fullNameDataFunc,
         fullNameData,
+        getUpdatedEmail,
+        updatedEmail,
       }}
     >
       {children}

@@ -32,7 +32,8 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
   });
 
   // Bottom sheet email input state...
-  const [bottomSheetPasswordInput, setBottomSheetPasswordInput] = useState("");
+  const [bottomSheetPasswordInput, setBottomSheetPasswordInput] =
+    useState("12345678");
 
   // Bottom sheet email input error state...
   const [bottomSheetPasswordInputError, setBottomSheetPasswordInputError] =
@@ -41,6 +42,9 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
   // Error state
   const [nameError, setNameError] = useState("");
   const [showAlert, setShowAlert] = useState(false);
+
+  // Matched password
+  const [passwordMatched, setPasswordMatched] = useState(false);
 
   // Input focus state
   const [isFocus, setIsFocus] = useState({
@@ -181,14 +185,15 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
       const response = await bottomSheetChangePassword(password, user);
 
       const data = await response.json();
-      console.log(data);
 
       if (data && data.message) {
         showToast(data.message);
       }
 
       if (response.ok) {
-        navigation.navigate("ChangeEmailScreen");
+        navigation.navigate("ChangeEmailScreen", {
+          userId: data.verification_id,
+        });
       }
     } catch (error) {
       console.error("Error changing password:", error);
@@ -419,7 +424,6 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
                   onChangeText={bottomSheetEmailInputHandler}
                   style={{
                     paddingLeft: 17,
-                    width: 312,
                     height: 48,
                     borderRadius: 7,
                     fontSize: 13,

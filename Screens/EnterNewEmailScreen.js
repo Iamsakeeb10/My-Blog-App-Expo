@@ -5,16 +5,19 @@ import AuthButton from "../components/UI/AuthButton";
 import { AuthContext } from "../store/auth-context";
 import { changeUserEmail } from "../util/auth";
 
-const EnterNewEmailScreen = () => {
+const EnterNewEmailScreen = ({ navigation, route }) => {
   const [isFocus, setIsFocus] = useState(false);
   const [enteredEmail, setEnteredEmail] = useState("");
   const [emailError, setEmailError] = useState("");
-  const { user } = useContext(AuthContext);
+  const { user, getUpdatedEmail } = useContext(AuthContext);
+  const userId = route.params.userId;
 
   const emailInputChangeHandler = (enteredValue) => {
     setEnteredEmail(enteredValue);
 
-    setEmailError("");
+    if (emailError) {
+      setEmailError("");
+    }
   };
 
   // Toast handler function
@@ -70,7 +73,11 @@ const EnterNewEmailScreen = () => {
         }
       } else {
         const data = await response.json();
-        console.log(data);
+        showToast(data.message);
+        getUpdatedEmail(trimmedEmail);
+        navigation.navigate("VerificationScreen", {
+          userId: userId,
+        });
       }
     } catch (error) {
       showToast(error.message);
