@@ -42,6 +42,14 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
   const [nameError, setNameError] = useState("");
   const [showAlert, setShowAlert] = useState(false);
 
+  // Input focus state
+  const [isFocus, setIsFocus] = useState({
+    name: false,
+    email: false,
+    mobile: false,
+    password: false,
+  });
+
   // Functions.....****
 
   // Showing alert
@@ -102,6 +110,26 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
     });
   };
 
+  // Input focus handler
+  const inputFocusHandler = (identifier) => {
+    setIsFocus((prevState) => {
+      return {
+        ...prevState,
+        [identifier]: true,
+      };
+    });
+  };
+
+  // Input blur handler
+  const inputBlurHandler = (identifier) => {
+    setIsFocus((prevState) => {
+      return {
+        ...prevState,
+        [identifier]: false,
+      };
+    });
+  };
+
   const editProfileDataHandler = async () => {
     const { userFullName } = inputValues;
 
@@ -120,6 +148,7 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
 
     try {
       const data = await changeFullName(userFullName, user);
+
       showAlertFunc();
       fullNameDataFunc(data);
     } catch (error) {
@@ -181,10 +210,19 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
                 setNameError("");
               }
             }}
-            style={styles.input}
+            style={[
+              styles.input,
+              {
+                borderColor: isFocus.name
+                  ? "#A0130F"
+                  : "rgba(214,214,214, 0.7)",
+              },
+            ]}
             placeholder={userProfile && userProfile.name ? "" : "Full Name"}
             placeholderTextColor="#7B7B7B"
             value={inputValues.userFullName}
+            onFocus={() => inputFocusHandler("name")}
+            onBlur={() => inputBlurHandler("name")}
           />
         </View>
         {/* Full name error */}
@@ -209,11 +247,21 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
           </View>
           <View style={styles.passwordContainer}>
             <TextInput
-              style={[styles.input, { flex: 1 }]}
+              style={[
+                styles.input,
+                {
+                  flex: 1,
+                  borderColor: isFocus.email
+                    ? "#A0130F"
+                    : "rgba(214,214,214, 0.7)",
+                },
+              ]}
               autoCapitalize="none"
               placeholder={userProfile && userProfile.email ? "" : "Email"}
               placeholderTextColor="#7B7B7B"
               value={userProfile.email}
+              onFocus={() => inputFocusHandler("email")}
+              onBlur={() => inputBlurHandler("email")}
             />
             <Pressable
               onPress={
@@ -246,11 +294,21 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
           </View>
           <View style={styles.passwordContainer}>
             <TextInput
-              style={[styles.input, { flex: 1 }]}
+              style={[
+                styles.input,
+                {
+                  flex: 1,
+                  borderColor: isFocus.mobile
+                    ? "#A0130F"
+                    : "rgba(214,214,214, 0.7)",
+                },
+              ]}
               autoCapitalize="none"
               placeholder={userProfile && userProfile.mobile ? "" : "Mobile"}
               placeholderTextColor="#7B7B7B"
               value={userProfile.mobile}
+              onFocus={() => inputFocusHandler("mobile")}
+              onBlur={() => inputBlurHandler("mobile")}
             />
             <Text style={styles.rowEndText}>
               {userProfile && userProfile.mobile ? "Change" : "Add Number"}
@@ -366,12 +424,16 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
                     borderRadius: 7,
                     fontSize: 13,
                     borderWidth: 1.6,
-                    borderColor: "#DBDBDB",
+                    borderColor: isFocus.password ? "#A0130F" : "#DBDBDB",
                     fontFamily: "roboto-regular",
                   }}
                   placeholderTextColor="#A3A3A3"
                   placeholder="Enter your password"
-                  onFocus={handleFocus}
+                  onFocus={() => {
+                    handleFocus();
+                    inputFocusHandler("password");
+                  }}
+                  onBlur={() => inputBlurHandler("password")}
                   value={bottomSheetPasswordInput}
                 />
               </View>
@@ -460,7 +522,6 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     fontSize: 13,
     borderWidth: 1.2,
-    borderColor: "rgba(214,214,214, 0.7)",
   },
 
   specificStyles: {

@@ -378,6 +378,29 @@ const App = () => {
               <Stack.Screen
                 name="ChangeEmailScreen"
                 component={EnterNewEmailScreen}
+                options={({ navigation }) => ({
+                  headerStyle: {
+                    backgroundColor: "#FAFAFA",
+                  },
+                  headerShadowVisible: false,
+                  contentStyle: {
+                    backgroundColor: "#FAFAFA",
+                  },
+                  headerTitle: "",
+                  headerLeft: () => (
+                    <View style={{ paddingLeft: 5 }}>
+                      <Pressable
+                        style={({ pressed }) => [pressed && { opacity: 0.7 }]}
+                        onPress={() => navigation.goBack()}
+                      >
+                        <Image
+                          style={styles.closeIcon}
+                          source={require("./assets/VerificationScreenIcons/Close.png")}
+                        />
+                      </Pressable>
+                    </View>
+                  ),
+                })}
               />
               <Stack.Screen
                 name="ChangePasswordScreen"
@@ -481,153 +504,3 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
 });
-
-// import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-// import React, { useRef, useState } from "react";
-// import {
-//   Button,
-//   Image,
-//   KeyboardAvoidingView,
-//   Text,
-//   TextInput,
-//   View,
-// } from "react-native";
-
-// import { GestureHandlerRootView } from "react-native-gesture-handler";
-// import AuthButton from "./components/UI/AuthButton";
-
-// const App = () => {
-//   const bottomSheetRef = useRef(null);
-//   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-//   const [snapPoints, setSnapPoints] = useState(["25%", "50%"]);
-
-//   const openBottomSheet = () => {
-//     bottomSheetRef.current?.expand();
-//     setIsBottomSheetOpen(true);
-//   };
-
-//   const closeBottomSheet = () => {
-//     bottomSheetRef.current?.close();
-//     setIsBottomSheetOpen(false);
-//   };
-
-//   const handleFocus = () => {
-//     setSnapPoints(["80%"]);
-//   };
-
-//   const handleBlur = () => {
-//     setSnapPoints(["25%", "50%"]);
-//   };
-
-//   return (
-//     <GestureHandlerRootView
-//       style={{ flex: 1, backgroundColor: isBottomSheetOpen ? "#ccc" : "#fff" }}
-//     >
-//       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-//         <Button title="Open Bottom Sheet" onPress={openBottomSheet} />
-//       </View>
-//       <BottomSheet
-//         detached={false}
-//         index={0}
-//         snapPoints={snapPoints}
-//         ref={bottomSheetRef}
-//         enablePanDownToClose={true}
-//         handleIndicatorStyle={{ backgroundColor: "#fff" }}
-//         keyboardBehavior="interactive"
-//       >
-//         <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-//           <BottomSheetView style={{ paddingHorizontal: 18, flex: 1 }}>
-//             <View
-//               style={{
-//                 flex: 0,
-//                 flexDirection: "row",
-//                 justifyContent: "space-between",
-//               }}
-//             >
-//               <Text
-//                 style={{
-//                   fontSize: 15,
-//                   color: "#3A3A3F",
-//                   fontFamily: "roboto-regular",
-//                 }}
-//               >
-//                 Change Email!
-//               </Text>
-//               <Image
-//                 style={{ width: 25, height: 25 }}
-//                 source={require("./assets/SheetIcon/Close.png")}
-//               />
-//             </View>
-//             <View style={{ flex: 0, marginTop: 6 }}>
-//               <Text
-//                 style={{
-//                   fontSize: 19,
-//                   textAlign: "center",
-//                   fontFamily: "roboto-semi",
-//                 }}
-//               >
-//                 Enter Password
-//               </Text>
-//             </View>
-//             <View style={{ flex: 0, marginTop: 6 }}>
-//               <Text
-//                 style={{
-//                   textAlign: "center",
-//                   fontSize: 13,
-//                   fontFamily: "roboto-regular",
-//                   color: "#3A3A3F",
-//                 }}
-//               >
-//                 Enter the password for estiak@finder-lbs.com
-//               </Text>
-//             </View>
-//             <View
-//               style={{
-//                 flex: 0,
-//                 alignItems: "center",
-//               }}
-//             >
-//               <Text
-//                 style={{
-//                   textAlign: "center",
-//                   textAlign: "center",
-//                   fontSize: 13,
-//                   fontFamily: "roboto-regular",
-//                   color: "#3A3A3F",
-//                 }}
-//               >
-//                 to change this email address
-//               </Text>
-//             </View>
-//             <View style={{ marginTop: 12 }}>
-//               <Text style={{ color: "#151312", marginBottom: 4, fontSize: 13 }}>
-//                 New Email Address
-//               </Text>
-//               <TextInput
-//                 style={{
-//                   paddingLeft: 17,
-//                   width: 312,
-//                   height: 48,
-//                   borderRadius: 7,
-//                   fontSize: 13,
-//                   borderWidth: 1.6,
-//                   borderColor: "#DBDBDB",
-//                   fontFamily: "roboto-regular",
-//                 }}
-//                 placeholderTextColor="#A3A3A3"
-//                 placeholder="Enter new email"
-//                 onFocus={handleFocus}
-//                 // onBlur={handleBlur}
-//               />
-//             </View>
-//             <View style={{ flex: 1, marginTop: 10 }}>
-//               <AuthButton>NEXT</AuthButton>
-//             </View>
-//           </BottomSheetView>
-//         </KeyboardAvoidingView>
-//       </BottomSheet>
-//     </GestureHandlerRootView>
-//   );
-// };
-
-// export default App;

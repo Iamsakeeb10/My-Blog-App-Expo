@@ -34,6 +34,13 @@ const ChangePasswordScreen = ({ navigation }) => {
   const [confirmNewPassError, setConfirmNewPassError] = useState("");
   const [isPasswordMatched, setPasswordMathced] = useState("");
 
+  // On Focus input state
+  const [isFocus, setIsFocused] = useState({
+    currentPass: false,
+    newPassword: false,
+    confirmNewPass: false,
+  });
+
   // Loader state
   const [loading, setLoading] = useState(false);
 
@@ -46,6 +53,26 @@ const ChangePasswordScreen = ({ navigation }) => {
 
   const hideAlertFunc = () => {
     setShowAlert(false);
+  };
+
+  // On Focus input handler
+  const inputFocusHandler = (identifier) => {
+    setIsFocused((prevState) => {
+      return {
+        ...prevState,
+        [identifier]: true,
+      };
+    });
+  };
+
+  // On Blur input handler
+  const inputBlurHandler = (identifier) => {
+    setIsFocused((prevState) => {
+      return {
+        ...prevState,
+        [identifier]: false,
+      };
+    });
   };
 
   function iconVisibilityHandler(identifier) {
@@ -192,12 +219,21 @@ const ChangePasswordScreen = ({ navigation }) => {
                   setCurPassError("");
                 }
               }}
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  borderColor: isFocus.currentPass
+                    ? "#A0130F"
+                    : "rgba(214,214,214, 0.7)",
+                },
+              ]}
               autoCapitalize="none"
               secureTextEntry={!showPassword.showCurPass}
               placeholder="Enter Password"
               placeholderTextColor="#BFBFBF"
               value={passwordInputValues.curPassword}
+              onFocus={() => inputFocusHandler("currentPass")}
+              onBlur={() => inputBlurHandler("currentPass")}
             />
             <Pressable onPress={() => iconVisibilityHandler("showCurPass")}>
               <Image
@@ -224,12 +260,21 @@ const ChangePasswordScreen = ({ navigation }) => {
                   setNewPassError("");
                 }
               }}
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  borderColor: isFocus.newPass
+                    ? "#A0130F"
+                    : "rgba(214,214,214, 0.7)",
+                },
+              ]}
               autoCapitalize="none"
               secureTextEntry={!showPassword.showNewPass}
               placeholder="Enter Password"
               placeholderTextColor="#BFBFBF"
               value={passwordInputValues.newPass}
+              onFocus={() => inputFocusHandler("newPass")}
+              onBlur={() => inputBlurHandler("newPass")}
             />
             <Pressable onPress={() => iconVisibilityHandler("showNewPass")}>
               <Image
@@ -256,12 +301,21 @@ const ChangePasswordScreen = ({ navigation }) => {
                   setConfirmNewPassError("");
                 }
               }}
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  borderColor: isFocus.confirmNewPass
+                    ? "#A0130F"
+                    : "rgba(214,214,214, 0.7)",
+                },
+              ]}
               autoCapitalize="none"
               secureTextEntry={!showPassword.showConfirmNewPass}
               placeholder="Enter Password"
               placeholderTextColor="#BFBFBF"
               value={passwordInputValues.confirmNewPassword}
+              onFocus={() => inputFocusHandler("confirmNewPass")}
+              onBlur={() => inputBlurHandler("confirmNewPass")}
             />
             <Pressable
               onPress={() => iconVisibilityHandler("showConfirmNewPass")}
@@ -349,7 +403,6 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     fontSize: 13,
     borderWidth: 1.2,
-    borderColor: "rgba(214,214,214, 0.7)",
     flex: 1,
   },
 

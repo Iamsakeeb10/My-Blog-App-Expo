@@ -23,6 +23,7 @@ const UserProfileScreen = ({ navigation, route }) => {
     const fetchProfile = async () => {
       if (user && user.access_token) {
         const data = await fetchProfileData(user);
+
         setUserProfile(data);
         setIsLoading(false);
       }

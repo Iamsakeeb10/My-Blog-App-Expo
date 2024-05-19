@@ -30,8 +30,34 @@ const AuthForm = () => {
 
   const { login, checkLoginStatus } = useContext(AuthContext);
 
+  // On Focus input state
+  const [isFocus, setIsFocused] = useState({
+    email: false,
+    password: false,
+  });
+
   // Getting the Navigation object...
   const navigation = useNavigation();
+
+  // On Focus input handler
+  const inputFocusHandler = (identifier) => {
+    setIsFocused((prevState) => {
+      return {
+        ...prevState,
+        [identifier]: true,
+      };
+    });
+  };
+
+  // On Blur input handler
+  const inputBlurHandler = (identifier) => {
+    setIsFocused((prevState) => {
+      return {
+        ...prevState,
+        [identifier]: false,
+      };
+    });
+  };
 
   // Validating Email...
   const validateEmail = (email) => {
@@ -175,16 +201,22 @@ const AuthForm = () => {
           </Text>
         </View>
         {/* Email Input Container */}
+
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Email</Text>
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input,
+              { borderColor: isFocus.email ? "#A0130F" : "#DBDBDB" },
+            ]}
             autoCapitalize="none"
             keyboardType="email-address"
             placeholder="Enter email"
             placeholderTextColor="#BFBFBF"
             onChangeText={(value) => inputChangeHandler("email", value)}
             value={inputValues.email}
+            onFocus={() => inputFocusHandler("email")}
+            onBlur={() => inputBlurHandler("email")}
           />
           {invalidEmail && <Text style={styles.errorText}>{invalidEmail}</Text>}
         </View>
@@ -193,13 +225,19 @@ const AuthForm = () => {
           <Text style={styles.label}>Password</Text>
           <View style={styles.passwordContainer}>
             <TextInput
-              style={[styles.input, styles.passwordInput]}
+              style={[
+                styles.input,
+                styles.passwordInput,
+                { borderColor: isFocus.password ? "#A0130F" : "#DBDBDB" },
+              ]}
               autoCapitalize="none"
               secureTextEntry={!showPass}
               placeholder="Enter password"
               placeholderTextColor="#BFBFBF"
               onChangeText={(value) => inputChangeHandler("password", value)}
               value={inputValues.password}
+              onFocus={() => inputFocusHandler("password")}
+              onBlur={() => inputBlurHandler("password")}
             />
             <Pressable onPress={() => setShowPass(!showPass)}>
               <Image
@@ -330,7 +368,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     fontSize: 13,
     borderWidth: 1.6,
-    borderColor: "#DBDBDB",
   },
 
   passwordContainer: {

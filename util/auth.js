@@ -130,14 +130,7 @@ export const changeFullName = async (fullName, user) => {
   }
 };
 
-// Change email api req...
-
-// base_url + '/users/password-verification'
-// method: post
-// payload: {
-//           'password': password,
-//           'verification_reason': 'email-change',
-//         }
+// Password verification api req...
 
 const change_email_url = base_url + "/users/password-verification";
 
@@ -154,6 +147,31 @@ export const bottomSheetChangePassword = async (password, user) => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${user.access_token}`,
       },
+      body: JSON.stringify(payload),
+    });
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// Change email api req...
+const change_user_email_url = base_url + "/users/verification-code";
+
+export const changeUserEmail = async (email, user) => {
+  const payload = {
+    verification_entity: email,
+  };
+
+  try {
+    const response = await fetch(change_user_email_url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.access_token}`,
+      },
+
       body: JSON.stringify(payload),
     });
 
