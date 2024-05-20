@@ -375,6 +375,7 @@ const App = () => {
                   />
                 )}
               </Stack.Screen>
+
               <Stack.Screen
                 name="ChangeEmailScreen"
                 component={EnterNewEmailScreen}
@@ -392,6 +393,38 @@ const App = () => {
                       <Pressable
                         style={({ pressed }) => [pressed && { opacity: 0.7 }]}
                         onPress={() => navigation.goBack()}
+                      >
+                        <Image
+                          style={styles.closeIcon}
+                          source={require("./assets/VerificationScreenIcons/Close.png")}
+                        />
+                      </Pressable>
+                    </View>
+                  ),
+                })}
+              />
+              {/* Disabled screen till now - Need to add navigate or replace to navigate to this screen.... */}
+              <Stack.Screen
+                name="VerificationScreen"
+                component={VerificationScreen}
+                options={({ navigation }) => ({
+                  headerStyle: {
+                    backgroundColor: "#FFF",
+                  },
+
+                  headerTitle: "",
+
+                  headerShadowVisible: false,
+
+                  contentStyle: {
+                    backgroundColor: "#FAFAFA",
+                  },
+
+                  headerLeft: () => (
+                    <View>
+                      <Pressable
+                        style={({ pressed }) => [pressed && { opacity: 0.7 }]}
+                        onPress={() => navigation.replace("ChangeEmailScreen")}
                       >
                         <Image
                           style={styles.closeIcon}
@@ -433,39 +466,6 @@ const App = () => {
                         source={require("./assets/UserProfileScreenImages/EditProfileScreenIcons/left-arrow.png")}
                       />
                     </Pressable>
-                  ),
-                })}
-              />
-
-              {/* Disabled screen till now - Need to add navigate or replace to navigate to this screen.... */}
-              <Stack.Screen
-                name="VerificationScreen"
-                component={VerificationScreen}
-                options={({ navigation }) => ({
-                  headerStyle: {
-                    backgroundColor: "#FFF",
-                  },
-
-                  headerTitle: "",
-
-                  headerShadowVisible: false,
-
-                  contentStyle: {
-                    backgroundColor: "#FAFAFA",
-                  },
-
-                  headerLeft: () => (
-                    <View>
-                      <Pressable
-                        style={({ pressed }) => [pressed && { opacity: 0.7 }]}
-                        onPress={() => navigation.goBack()}
-                      >
-                        <Image
-                          style={styles.closeIcon}
-                          source={require("./assets/VerificationScreenIcons/Close.png")}
-                        />
-                      </Pressable>
-                    </View>
                   ),
                 })}
               />

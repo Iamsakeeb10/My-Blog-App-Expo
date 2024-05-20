@@ -1,6 +1,6 @@
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   Image,
   KeyboardAvoidingView,
@@ -21,8 +21,10 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
   const navigation = useNavigation();
   const bottomSheetRef = useRef(null);
   const route = useRoute();
-  const { userProfile } = route.params;
-  const { user, fullNameDataFunc } = useContext(AuthContext);
+  const { userProfile = {} } = route.params || {};
+  const { user, fullNameDataFunc, fullNameData, updatedEmail } =
+    useContext(AuthContext);
+  console.log(fullNameData);
 
   const [snapPoints, setSnapPoints] = useState(["50%", "70%"]);
   const [bottomSheetIndex, setBottomSheetIndex] = useState(-1);
@@ -30,6 +32,11 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
   const [inputValues, setInputValues] = useState({
     userFullName: userProfile && userProfile.name,
   });
+
+  const [showPassword, setShowPassword] = useState("");
+
+  // Bottom sheet open or not
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 
   // Bottom sheet email input state...
   const [bottomSheetPasswordInput, setBottomSheetPasswordInput] =
@@ -79,21 +86,34 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
     setBottomSheetIndex(0);
     bottomSheetRef.current?.expand();
     isBottomSheetOpenYet(true);
+    setIsBottomSheetOpen(true);
   };
 
   const closeBottomSheet = () => {
     setBottomSheetIndex(-1);
     bottomSheetRef.current?.close();
     isBottomSheetOpenYet(false);
+    setIsBottomSheetOpen(false);
   };
 
   const handleFocus = () => {
     setSnapPoints(["100%"]);
   };
 
+  const handleBlur = () => {
+    setSnapPoints(["50%"]);
+  };
+
   const handleBottomSheetClose = () => {
     isBottomSheetOpenYet(false);
   };
+
+  // Closing bottomsheet when navigating away...
+  useEffect(() => {
+    const unSubscribe = navigation.addListener("blur", () => {
+      closeBottomSheet();
+    });
+  }, [navigation]);
 
   // Bottom sheet input handler...
   const bottomSheetEmailInputHandler = (enteredValue) => {
@@ -133,6 +153,10 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
       };
     });
   };
+
+  function iconVisibilityHandler() {
+    setShowPassword((prevPass) => !prevPass);
+  }
 
   const editProfileDataHandler = async () => {
     const { userFullName } = inputValues;
@@ -203,7 +227,14 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
   return (
     <View style={styles.rootContainer}>
       <StatusBar barStyle="dark-content" />
-      <View style={styles.borderStyle} />
+      <View
+        style={{
+          borderTopWidth: 2,
+          borderTopColor: isBottomSheetOpen
+            ? "rgba(0,0,0,0.1)"
+            : "rgba(190,190,190, 0.2)",
+        }}
+      />
       <View style={styles.innerContainer}>
         {/* Full Name Input */}
         <View style={[styles.inputContainer, styles.specificStyles]}>
@@ -218,7 +249,9 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
             style={[
               styles.input,
               {
-                borderColor: isFocus.name
+                borderColor: isBottomSheetOpen
+                  ? "rgba(0,0,0,0.1)"
+                  : isFocus.name
                   ? "#A0130F"
                   : "rgba(214,214,214, 0.7)",
               },
@@ -255,16 +288,18 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
               style={[
                 styles.input,
                 {
-                  flex: 1,
-                  borderColor: isFocus.email
+                  borderColor: isBottomSheetOpen
+                    ? "rgba(0,0,0,0.1)"
+                    : isFocus.email
                     ? "#A0130F"
                     : "rgba(214,214,214, 0.7)",
+                  flex: 1,
                 },
               ]}
               autoCapitalize="none"
               placeholder={userProfile && userProfile.email ? "" : "Email"}
               placeholderTextColor="#7B7B7B"
-              value={userProfile.email}
+              value={updatedEmail}
               onFocus={() => inputFocusHandler("email")}
               onBlur={() => inputBlurHandler("email")}
             />
@@ -302,10 +337,12 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
               style={[
                 styles.input,
                 {
-                  flex: 1,
-                  borderColor: isFocus.mobile
+                  borderColor: isBottomSheetOpen
+                    ? "rgba(0,0,0,0.1)"
+                    : isFocus.mobile
                     ? "#A0130F"
                     : "rgba(214,214,214, 0.7)",
+                  flex: 1,
                 },
               ]}
               autoCapitalize="none"
@@ -420,26 +457,45 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
                 >
                   Password
                 </Text>
-                <TextInput
-                  onChangeText={bottomSheetEmailInputHandler}
-                  style={{
-                    paddingLeft: 17,
-                    height: 48,
-                    borderRadius: 7,
-                    fontSize: 13,
-                    borderWidth: 1.6,
-                    borderColor: isFocus.password ? "#A0130F" : "#DBDBDB",
-                    fontFamily: "roboto-regular",
-                  }}
-                  placeholderTextColor="#A3A3A3"
-                  placeholder="Enter your password"
-                  onFocus={() => {
-                    handleFocus();
-                    inputFocusHandler("password");
-                  }}
-                  onBlur={() => inputBlurHandler("password")}
-                  value={bottomSheetPasswordInput}
-                />
+                <View style={{ flexDirection: "row", position: "relative" }}>
+                  <TextInput
+                    onChangeText={bottomSheetEmailInputHandler}
+                    style={{
+                      flex: 1,
+                      paddingLeft: 17,
+                      height: 48,
+                      borderRadius: 7,
+                      fontSize: 13,
+                      borderWidth: 1.6,
+                      borderColor: isFocus.password ? "#A0130F" : "#DBDBDB",
+                      fontFamily: "roboto-regular",
+                    }}
+                    placeholderTextColor="#A3A3A3"
+                    placeholder="Enter your password"
+                    secureTextEntry={!showPassword}
+                    onFocus={() => {
+                      handleFocus();
+                      inputFocusHandler("password");
+                    }}
+                    onBlur={() => {
+                      inputBlurHandler("password");
+                      handleBlur();
+                    }}
+                    value={bottomSheetPasswordInput}
+                  />
+                  <Pressable
+                    onPress={() => iconVisibilityHandler("showNewPass")}
+                  >
+                    <Image
+                      source={
+                        !showPassword
+                          ? require("../assets/images/hidden.png")
+                          : require("../assets/images/visibility.png")
+                      }
+                      style={styles.eyeImg}
+                    />
+                  </Pressable>
+                </View>
               </View>
               {bottomSheetPasswordInputError ? (
                 <Text
@@ -491,6 +547,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
+  eyeImg: {
+    width: 20,
+    height: 20,
+    position: "absolute",
+    top: "50%",
+    transform: [{ translateY: -10 }],
+    right: 15,
+  },
+
   errorText: {
     color: "#D2042D",
     fontSize: 12,
@@ -502,11 +567,6 @@ const styles = StyleSheet.create({
   innerContainer: {
     paddingTop: 9,
     flex: 1,
-  },
-
-  borderStyle: {
-    borderTopWidth: 2,
-    borderTopColor: "rgba(190,190,190, 0.2)",
   },
 
   inputContainer: {

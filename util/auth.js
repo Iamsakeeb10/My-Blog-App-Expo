@@ -1,6 +1,6 @@
-const base_url = "http://dev23.finder.com.bd/api/v1";
+const BASE_URL = "http://dev23.finder.com.bd/api/v1";
 
-const url = "http://dev23.finder.com.bd/api/v1/users/login";
+const LOGIN_URL = "http://dev23.finder.com.bd/api/v1/users/login";
 
 export async function loginUser(email, password) {
   try {
@@ -11,7 +11,7 @@ export async function loginUser(email, password) {
 
     // console.log("-------requestbody:", requestBody);
 
-    const response = await fetch(url, {
+    const response = await fetch(LOGIN_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -58,11 +58,11 @@ const encodeBase64 = (input) => {
 };
 
 // Sending request for getting profile data...
-const get_url = "http://dev23.finder.com.bd/api/v1/users/customers/profile";
+const GET_URL = "http://dev23.finder.com.bd/api/v1/users/customers/profile";
 
 export const fetchProfileData = async (user) => {
   try {
-    const response = await fetch(get_url, {
+    const response = await fetch(GET_URL, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${user.access_token}`,
@@ -79,7 +79,7 @@ export const fetchProfileData = async (user) => {
 };
 
 // Change password api req...
-const patch_url = base_url + "/users/customers/profile/change-password";
+const PATCH_URL = BASE_URL + "/users/customers/profile/change-password";
 
 export const changeUserPassword = async (curPass, newPass, user) => {
   const requestBody = {
@@ -88,7 +88,7 @@ export const changeUserPassword = async (curPass, newPass, user) => {
   };
 
   try {
-    const response = await fetch(patch_url, {
+    const response = await fetch(PATCH_URL, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -105,7 +105,7 @@ export const changeUserPassword = async (curPass, newPass, user) => {
 
 // Change full name api req...
 
-const name_change_url = base_url + "/users/customers/profile";
+const NAME_CHANGE_URL = BASE_URL + "/users/customers/profile";
 
 export const changeFullName = async (fullName, user) => {
   const payload = {
@@ -113,7 +113,7 @@ export const changeFullName = async (fullName, user) => {
   };
 
   try {
-    const response = await fetch(name_change_url, {
+    const response = await fetch(NAME_CHANGE_URL, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -132,7 +132,7 @@ export const changeFullName = async (fullName, user) => {
 
 // Password verification api req...
 
-const change_email_url = base_url + "/users/password-verification";
+const CHANGE_EMAIL_URL = BASE_URL + "/users/password-verification";
 
 export const bottomSheetChangePassword = async (password, user) => {
   const payload = {
@@ -141,7 +141,7 @@ export const bottomSheetChangePassword = async (password, user) => {
   };
 
   try {
-    const response = await fetch(change_email_url, {
+    const response = await fetch(CHANGE_EMAIL_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -157,7 +157,7 @@ export const bottomSheetChangePassword = async (password, user) => {
 };
 
 // Change email api req...
-const change_user_email_url = base_url + "/users/verification-code";
+const CHANGE_USER_EMAIL_URL = BASE_URL + "/users/verification-code";
 
 export const changeUserEmail = async (email, user) => {
   const payload = {
@@ -165,13 +165,41 @@ export const changeUserEmail = async (email, user) => {
   };
 
   try {
-    const response = await fetch(change_user_email_url, {
+    const response = await fetch(CHANGE_USER_EMAIL_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${user.access_token}`,
       },
 
+      body: JSON.stringify(payload),
+    });
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// Api req for changing email through verification code...
+
+const VERIFY_EMAIL_URL =
+  "http://dev23.finder.com.bd:8010/users/customers/profile/change-contact-info";
+
+export const verifyEmail = async (updatedEmail, enteredCode, userId, user) => {
+  const payload = {
+    verification_entity: updatedEmail,
+    verification_code: enteredCode,
+    verification_id: userId,
+  };
+
+  try {
+    const response = await fetch(VERIFY_EMAIL_URL, {
+      method: "PATCH",
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${user.access_token}`,
+      },
       body: JSON.stringify(payload),
     });
 

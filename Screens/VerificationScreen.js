@@ -6,25 +6,45 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from "react-native-confirmation-code-field";
+import Toast from "react-native-toast-message";
+import Alert from "../components/UI/Alert";
 import { AuthContext } from "../store/auth-context";
+import { verifyEmail } from "../util/auth";
 import AuthButton from "./../components/UI/AuthButton";
 
 const CELL_COUNT = 6;
 
-const VerificationScreen = ({ route }) => {
+const VerificationScreen = ({ route, navigation }) => {
   const [value, setValue] = useState("");
   const [codeError, setCodeError] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
 
-  const { updatedEmail } = useContext(AuthContext);
+  const { updatedEmail, user, getUpdatedEmail } = useContext(AuthContext);
   // Necessary for sending api req....
-  const userId = route.params.userId;
-  console.log(userId);
+  const { userId = {} } = route.params || {};
 
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
   const [props, getCellOnLayoutHandler] = useClearByFocusCell({
     value,
     setValue,
   });
+
+  // Alert
+  const showAlertHandler = () => {
+    setShowAlert(true);
+  };
+  const closeAlertHandler = () => {
+    navigation.pop();
+  };
+
+  // Toast handler function
+  const showToast = (error) => {
+    Toast.show({
+      type: "error",
+      text1: error,
+      position: "bottom",
+    });
+  };
 
   const codeChangeHandler = (enteredValue) => {
     setValue(enteredValue);
@@ -34,7 +54,7 @@ const VerificationScreen = ({ route }) => {
     }
   };
 
-  const verifyCodeHandler = () => {
+  const verifyCodeHandler = async () => {
     const trimmedValue = value.trim();
 
     if (!trimmedValue) {
@@ -56,7 +76,24 @@ const VerificationScreen = ({ route }) => {
 
     setCodeError("");
 
-    console.log("value--****", value);
+    try {
+      const response = await verifyEmail(
+        updatedEmail,
+        trimmedValue,
+        userId,
+        user
+      );
+
+      if (!response.ok) {
+        const data = await response.json();
+        showToast(data.message || "Verification failed");
+      } else {
+        getUpdatedEmail(updatedEmail);
+        showAlertHandler();
+      }
+    } catch (error) {
+      showToast(error.message);
+    }
   };
 
   return (
@@ -119,6 +156,17 @@ const VerificationScreen = ({ route }) => {
           Didn't receive code?
           <Text style={styles.footerTextSpecific}> Resend</Text>
         </Text>
+      </View>
+      <View>
+        <Alert
+          title="Email Updated"
+          message="Your email has been changed successfully"
+          showAlert={showAlert}
+          hideAlertFunc={closeAlertHandler}
+        />
+      </View>
+      <View style={{ marginTop: 260 }}>
+        <Toast />
       </View>
     </View>
   );

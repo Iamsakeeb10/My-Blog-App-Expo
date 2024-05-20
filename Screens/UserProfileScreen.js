@@ -17,7 +17,7 @@ const UserProfileScreen = ({ navigation, route }) => {
   const [userProfile, setUserProfile] = useState(null);
 
   const [loading, setIsLoading] = useState(true);
-  const { user, fullNameData } = useContext(AuthContext);
+  const { user, fullNameData, getUpdatedEmail } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -25,12 +25,13 @@ const UserProfileScreen = ({ navigation, route }) => {
         const data = await fetchProfileData(user);
 
         setUserProfile(data);
+        getUpdatedEmail(data.email);
         setIsLoading(false);
       }
     };
 
     fetchProfile();
-  }, [user]);
+  }, [user, getUpdatedEmail]);
 
   useEffect(() => {
     if (userProfile && fullNameData) {
@@ -209,9 +210,7 @@ const UserProfileScreen = ({ navigation, route }) => {
     profileNotVerified = (
       <View style={styles.profileNameContainer}>
         <Text style={styles.profileName}>{userProfile.name}</Text>
-        <View
-          style={{ flexDirection: "row", alignItems: "center", columnGap: 4 }}
-        >
+        <View style={{ alignItems: "center" }}>
           <View>
             <Text style={emailIsValid}>{userProfile.email}</Text>
           </View>

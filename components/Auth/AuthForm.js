@@ -18,7 +18,7 @@ import IconButton from "../UI/IconButton";
 
 const AuthForm = () => {
   const [inputValues, setInputValues] = useState({
-    email: "estiak@finder-lbs.com",
+    email: "shakib18@test.com",
     password: "12345678",
   });
 

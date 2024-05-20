@@ -7,10 +7,10 @@ import { changeUserEmail } from "../util/auth";
 
 const EnterNewEmailScreen = ({ navigation, route }) => {
   const [isFocus, setIsFocus] = useState(false);
-  const [enteredEmail, setEnteredEmail] = useState("");
+  const [enteredEmail, setEnteredEmail] = useState("test@test.com");
   const [emailError, setEmailError] = useState("");
   const { user, getUpdatedEmail } = useContext(AuthContext);
-  const userId = route.params.userId;
+  const { userId = {} } = route.params || {};
 
   const emailInputChangeHandler = (enteredValue) => {
     setEnteredEmail(enteredValue);
@@ -75,6 +75,7 @@ const EnterNewEmailScreen = ({ navigation, route }) => {
         const data = await response.json();
         showToast(data.message);
         getUpdatedEmail(trimmedEmail);
+        navigation.pop();
         navigation.navigate("VerificationScreen", {
           userId: userId,
         });
@@ -109,6 +110,7 @@ const EnterNewEmailScreen = ({ navigation, route }) => {
             placeholder="Enter new email"
             onFocus={() => setIsFocus(true)}
             onBlur={() => setIsFocus(false)}
+            value={enteredEmail}
           />
         </View>
         {emailError ? <Text style={styles.errorText}>{emailError}</Text> : ""}
