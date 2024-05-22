@@ -24,7 +24,6 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
   const { userProfile = {} } = route.params || {};
   const { user, fullNameDataFunc, fullNameData, updatedEmail } =
     useContext(AuthContext);
-  console.log(fullNameData);
 
   const [snapPoints, setSnapPoints] = useState(["50%", "70%"]);
   const [bottomSheetIndex, setBottomSheetIndex] = useState(-1);

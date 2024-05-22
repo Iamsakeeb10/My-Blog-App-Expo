@@ -110,6 +110,7 @@ const DrawerContent = (props) => {
           </View>
           <View style={styles.drawerItem}>
             <DrawerItem
+              onPress={() => navigation.navigate("HelpSupportScreen")}
               label="Help & Support"
               icon={require("../../assets/DrawerIcons/help & Support.png")}
             />

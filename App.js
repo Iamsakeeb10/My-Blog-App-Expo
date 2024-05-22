@@ -33,6 +33,7 @@ import VerificationScreen from "./Screens/VerificationScreen";
 import WelcomeScreen from "./Screens/WelcomeScreen";
 import AuthContentScreen from "./components/Auth/AuthContentScreen";
 import BlogDetails from "./components/BlogDetail/BlogDetails";
+import Header from "./components/CustomHeader/Header";
 import DrawerItem from "./components/UI/DrawerItem";
 import IconButton from "./components/UI/IconButton";
 import AuthContextProvider, { AuthContext } from "./store/auth-context";
@@ -68,7 +69,13 @@ const DrawerNavigator = () => {
         drawerActiveBackgroundColor: "#fff",
       }}
     >
-      <Drawer.Screen name="MyBlogs" component={HomeScreen} />
+      <Drawer.Screen
+        name="MyBlogs"
+        component={HomeScreen}
+        options={{
+          headerTitle: "My Blogs",
+        }}
+      />
       <Drawer.Screen
         options={{
           headerRight: () => (
@@ -178,6 +185,10 @@ const DrawerNavigator = () => {
       />
       <Drawer.Screen
         options={() => ({
+          sceneContainerStyle: {
+            backgroundColor: "#FAFAFA",
+          },
+          header: () => <Header />,
           drawerLabel: () => (
             <DrawerItem
               label="Help & Support"
