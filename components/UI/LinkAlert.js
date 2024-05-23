@@ -8,20 +8,21 @@ const LinkAlert = ({
   showAlert,
   hideAlertFunc,
   enterLinkHandler,
+  onCloseAlert,
 }) => {
   return (
     <View style={{ flex: 1 }}>
       <AwesomeAlert
+        onDismiss={onCloseAlert}
         show={showAlert}
         showProgress={false}
         title={title}
         message={message}
-        closeOnTouchOutside={false}
+        closeOnTouchOutside={true}
         closeOnHardwareBackPress={true}
         showConfirmButton={true}
-        showCancelButton={true}
+        showCancelButton={false}
         confirmText="Okay"
-        cancelText="Cancel"
         onCancelPressed={hideAlertFunc}
         onConfirmPressed={enterLinkHandler}
         alertContainerStyle={{
@@ -56,7 +57,7 @@ const LinkAlert = ({
         cancelButtonTextStyle={{
           color: "#EE4E4E",
           fontSize: 17,
-          findFocusedRoute: "roboto-semi",
+          fontFamily: "roboto-semi",
         }}
       />
     </View>

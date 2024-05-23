@@ -16,10 +16,25 @@ const AuthContextProvider = ({ children }) => {
 
       // console.log("---userdata", userData);
 
-      if (parsedUserData && parsedUserData.access_token) {
-        setUser(parsedUserData);
+      if (
+        parsedUserData &&
+        parsedUserData.access_token &&
+        parsedUserData.expires_in &&
+        parsedUserData.timestamp
+      ) {
+        const currentTime = Date.now();
+
+        const tokenObtainedTime = parsedUserData.timestamp;
+
+        const expiredIn = parsedUserData.expires_in * 1000;
+
+        if (currentTime < tokenObtainedTime + expiredIn) {
+          setUser(parsedUserData);
+          return parsedUserData;
+        }
       }
-      return parsedUserData;
+
+      return null;
     } catch (error) {
       console.log(error);
     }
@@ -28,7 +43,14 @@ const AuthContextProvider = ({ children }) => {
   // Function to log in user
   const login = async (userData) => {
     try {
-      await AsyncStorage.setItem("userData", JSON.stringify(userData));
+      const timestamp = Date.now();
+
+      const userDataWithTimeStamp = { ...userData, timestamp };
+
+      await AsyncStorage.setItem(
+        "userData",
+        JSON.stringify(userDataWithTimeStamp)
+      );
 
       // console.log("setting data -----", userData);
 

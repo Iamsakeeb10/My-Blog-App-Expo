@@ -1,6 +1,7 @@
 import { openURL } from "expo-linking";
 import React, { useState } from "react";
 import {
+  Alert,
   Image,
   Pressable,
   StatusBar,
@@ -17,11 +18,7 @@ const HelpSupportScreen = () => {
   const ICON_CONTAINER_HEIGHT = Math.max(155, windowHeight * 0.1);
   const DETAILS_TEXT_HEIGHT = Math.max(105, windowHeight * 0.1);
 
-  const [titleAlert, setTitleAlert] = useState("");
-  const [messageAlert, setMessageAlert] = useState("");
   const [alertVisible, setAlertVisible] = useState(false);
-  const [linkToOpen, setLinkToOpen] = useState("");
-  console.log(alertVisible);
 
   const sendingCallHandler = async () => {
     const phoneNumber = "+8809678346337";
@@ -41,7 +38,7 @@ const HelpSupportScreen = () => {
     try {
       await openURL(`whatsapp://send?phone=${whatsappNumber}`);
     } catch (error) {
-      Alert.alert("Failed!", "Whatsapp is not installed on your device");
+      setAlertVisible(true);
     }
   };
   const sendingEmailHandler = async () => {
@@ -57,28 +54,11 @@ const HelpSupportScreen = () => {
     }
   };
 
-  const handleSocialMediaLink = async (
-    appLink,
-    browserLink,
-    alertTitle,
-    alertMessage
-  ) => {
+  const enterSocialMeadiaLink = async (browserLink) => {
     try {
-      await openURL(appLink);
+      await openURL(browserLink);
     } catch (error) {
-      setAlertVisible(true);
-      setTitleAlert(alertTitle);
-      setMessageAlert(alertMessage);
-      setLinkToOpen(browserLink);
-    }
-  };
-
-  const enterLinkHandler = async () => {
-    try {
-      closeFbAlertHandler();
-      await openURL(linkToOpen);
-    } catch (error) {
-      Alert.alert("Error", "Cannot open browser link");
+      Alert.alert("Failed", "Try again later");
     }
   };
 
@@ -164,11 +144,8 @@ const HelpSupportScreen = () => {
             <View style={{ flexDirection: "row", gap: 10 }}>
               <Pressable
                 onPress={() =>
-                  handleSocialMediaLink(
-                    "fb://page/finder.vehicle.tracking",
-                    "https://www.facebook.com/finder.vehicle.tracking",
-                    "Facebook app not installed",
-                    "Do you want to open in the browser?"
+                  enterSocialMeadiaLink(
+                    "https://www.facebook.com/finder.vehicle.tracking"
                   )
                 }
               >
@@ -179,12 +156,7 @@ const HelpSupportScreen = () => {
               </Pressable>
               <Pressable
                 onPress={() =>
-                  handleSocialMediaLink(
-                    "twitter://user?screen_name=findertracking",
-                    "https://twitter.com/findertracking",
-                    "Twitter app not installed",
-                    "Do you want to open in the browser?"
-                  )
+                  enterSocialMeadiaLink("https://twitter.com/findertracking")
                 }
               >
                 <Image
@@ -194,11 +166,8 @@ const HelpSupportScreen = () => {
               </Pressable>
               <Pressable
                 onPress={() =>
-                  handleSocialMediaLink(
-                    "instagram://user?username=findertracking",
-                    "https://www.instagram.com/findertracking",
-                    "Instagram app not installed",
-                    "Do you want to open in the browser?"
+                  enterSocialMeadiaLink(
+                    "https://www.instagram.com/findertracking"
                   )
                 }
               >
@@ -209,11 +178,8 @@ const HelpSupportScreen = () => {
               </Pressable>
               <Pressable
                 onPress={() =>
-                  handleSocialMediaLink(
-                    "bd.linkedin.com/company/finder-gps-tracker",
-                    "https://bd.linkedin.com/company/finder-gps-tracker",
-                    "Linkedin app not installed",
-                    "Do you want to open in the browser?"
+                  enterSocialMeadiaLink(
+                    "https://bd.linkedin.com/company/finder-gps-tracker"
                   )
                 }
               >
@@ -224,11 +190,8 @@ const HelpSupportScreen = () => {
               </Pressable>
               <Pressable
                 onPress={() =>
-                  handleSocialMediaLink(
-                    "vnd.youtube://channel/UCfFGk5kaVq22QQ6itfXEEZw",
-                    "https://www.youtube.com/channel/UCfFGk5kaVq22QQ6itfXEEZw",
-                    "Youtube app not installed",
-                    "Do you want to open in the browser?"
+                  enterSocialMeadiaLink(
+                    "https://www.youtube.com/channel/UCfFGk5kaVq22QQ6itfXEEZw"
                   )
                 }
               >
@@ -243,10 +206,11 @@ const HelpSupportScreen = () => {
         <View>
           <LinkAlert
             showAlert={alertVisible}
-            title={titleAlert}
-            message={messageAlert}
-            enterLinkHandler={enterLinkHandler}
+            title="Failed!"
+            message="Whatsapp not installed"
             hideAlertFunc={closeFbAlertHandler}
+            onCloseAlert={closeFbAlertHandler}
+            enterLinkHandler={closeFbAlertHandler}
           />
         </View>
       </ScrollView>
