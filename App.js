@@ -435,7 +435,7 @@ const App = () => {
                     <View>
                       <Pressable
                         style={({ pressed }) => [pressed && { opacity: 0.7 }]}
-                        onPress={() => navigation.replace("ChangeEmailScreen")}
+                        onPress={() => navigation.goBack()}
                       >
                         <Image
                           style={styles.closeIcon}

@@ -22,10 +22,10 @@ const ThirdScreen = ({ navigation }) => {
   });
 
   const [inputValues, setInputValues] = useState({
-    fullName: "Shakib Ahmed",
-    email: "test@test.com",
-    password: "12345678",
-    reTypePassword: "12345678",
+    fullName: "",
+    email: "",
+    password: "",
+    reTypePassword: "",
   });
 
   const [nameError, setNameError] = useState("");
@@ -172,10 +172,15 @@ const ThirdScreen = ({ navigation }) => {
         console.log(data);
 
         showToast(data.message);
-        navigation.navigate("VerificationScreen");
+        navigation.navigate("VerificationScreen", {
+          fullName: trimmedName,
+          email: trimmedEmail,
+          password: trimmedReTypePassword,
+          isRegestered: true,
+        });
       }
     } catch (error) {
-      console.log(error);
+      showToast(error.message);
     }
   };
   return (
@@ -311,6 +316,7 @@ const ThirdScreen = ({ navigation }) => {
               </Pressable>
             </View>
           </View>
+
           {/* Button */}
           <View style={styles.btnContainerOuter}>
             <Pressable
@@ -320,11 +326,15 @@ const ThirdScreen = ({ navigation }) => {
               <Text style={styles.btnText}>CREATE ACCOUNT</Text>
             </Pressable>
           </View>
+
           {/* Alternative of Create Account */}
           <View style={styles.orContainer}>
             <View style={styles.dottedBorder} />
             <Text style={styles.orText}>Or</Text>
             <View style={styles.dottedBorder} />
+          </View>
+          <View>
+            <Toast />
           </View>
           {/* Continue With */}
           <View style={styles.continueWithParentContainer}>
@@ -347,6 +357,7 @@ const ThirdScreen = ({ navigation }) => {
               </View>
             </View>
           </View>
+
           {/* Footer Text Container */}
           <View style={styles.createNewContainer}>
             <View style={styles.createAccountContainer}>
@@ -364,9 +375,6 @@ const ThirdScreen = ({ navigation }) => {
               </Pressable>
             </View>
           </View>
-        </View>
-        <View>
-          <Toast />
         </View>
       </View>
     </ScrollView>

@@ -76,7 +76,7 @@ const EnterNewEmailScreen = ({ navigation, route }) => {
 
         showToast(data.message);
         getUpdatedEmail(trimmedEmail);
-        navigation.pop();
+        // navigation.pop();
         navigation.navigate("VerificationScreen", {
           userId: userId,
         });

@@ -239,28 +239,30 @@ export const emailVerificationForCreatingUser = async (email, user) => {
   }
 };
 
-// // Creating user api req...
-// const CREATING_USER_URL = BASE_URL + "/users/customers/registration";
+// Creating user....
+const CREATING_USER_URL = BASE_URL + "/users/customers/registration";
 
-// export const creatingUser = async (name, email, code, password) => {
-//   const payload = {
-//     name: name,
-//     email: email,
-//     verification_code: code,
-//     password: encodeBase64(password),
-//   };
+export const creatingUser = async (name, email, code, password) => {
+  const payload = {
+    name: name,
+    email: email,
+    verification_code: code,
+    password: encodeBase64(password),
+  };
 
-//   try {
-//     const response = await fetch(CREATING_USER_URL, {
-//       method: "POST",
-//       headers: {
-//         "Content-type": "application/json",
-//       },
-//       body: JSON.stringify(payload),
-//     });
+  const headers = {
+    "Content-type": "application/json",
+  };
 
-//     return response;
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+  try {
+    const response = await fetch(CREATING_USER_URL, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(payload),
+    });
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};

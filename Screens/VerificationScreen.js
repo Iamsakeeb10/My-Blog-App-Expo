@@ -9,7 +9,7 @@ import {
 import Toast from "react-native-toast-message";
 import Alert from "../components/UI/Alert";
 import { AuthContext } from "../store/auth-context";
-import { verifyEmail } from "../util/auth";
+import { creatingUser, verifyEmail } from "../util/auth";
 import AuthButton from "./../components/UI/AuthButton";
 
 const CELL_COUNT = 6;
@@ -21,7 +21,14 @@ const VerificationScreen = ({ route, navigation }) => {
 
   const { updatedEmail, user, getUpdatedEmail } = useContext(AuthContext);
   // Necessary for sending api req....
-  const { userId = {} } = route.params || {};
+  const {
+    userId = {},
+    fullName,
+    email,
+    password,
+    isRegestered,
+  } = route.params || {};
+  console.log(fullName, email, password, isRegestered);
 
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
   const [props, getCellOnLayoutHandler] = useClearByFocusCell({
@@ -34,7 +41,7 @@ const VerificationScreen = ({ route, navigation }) => {
     setShowAlert(true);
   };
   const closeAlertHandler = () => {
-    navigation.pop();
+    navigation.replace("EditProfileScreen");
   };
 
   // Toast handler function
@@ -54,6 +61,70 @@ const VerificationScreen = ({ route, navigation }) => {
     }
   };
 
+  const handleVerificationCode = async (code) => {
+    const trimmedValue = value.trim();
+
+    if (!trimmedValue) {
+      setCodeError(`Field can't be empty`);
+      return;
+    }
+
+    if (trimmedValue.length !== 6) {
+      setCodeError("Empty field found");
+      return;
+    }
+
+    const isValid = /^\d+$/.test(value);
+
+    if (!isValid) {
+      setCodeError("Numbers required");
+      return;
+    }
+
+    setCodeError("");
+    try {
+      const response = await creatingUser(fullName, email, code, password);
+
+      if (!response.ok) {
+        const data = await response.json();
+        console.log("not okay----", data);
+
+        showToast(data.message || "An error occurred");
+      } else {
+        const data = await response.json();
+        console.log(data);
+
+        showToast(data.message);
+        navigation.navigate("Login");
+      }
+    } catch (error) {
+      showToast(error.message);
+    }
+  };
+
+  const verifyCodeForEmailChange = async () => {
+    const trimmedValue = value.trim();
+
+    try {
+      const response = await verifyEmail(
+        updatedEmail,
+        trimmedValue,
+        userId,
+        user
+      );
+
+      if (!response.ok) {
+        const data = await response.json();
+        showToast(data.message || "Verification failed");
+      } else {
+        showAlertHandler();
+      }
+    } catch (error) {
+      showToast(error.message);
+    }
+  };
+
+  // Auth Button....
   const verifyCodeHandler = async () => {
     const trimmedValue = value.trim();
 
@@ -76,23 +147,7 @@ const VerificationScreen = ({ route, navigation }) => {
 
     setCodeError("");
 
-    try {
-      const response = await verifyEmail(
-        updatedEmail,
-        trimmedValue,
-        userId,
-        user
-      );
-
-      if (!response.ok) {
-        const data = await response.json();
-        showToast(data.message || "Verification failed");
-      } else {
-        showAlertHandler();
-      }
-    } catch (error) {
-      showToast(error.message);
-    }
+    verifyCodeForEmailChange();
   };
 
   return (
@@ -102,7 +157,8 @@ const VerificationScreen = ({ route, navigation }) => {
       </View>
       <View style={{ marginTop: 2 }}>
         <Text style={styles.verificationTextSmall}>
-          We sent a security code to <Text>{updatedEmail}</Text>
+          We sent a security code to{" "}
+          <Text>{updatedEmail ? updatedEmail : email}</Text>
         </Text>
       </View>
       <View>
@@ -148,7 +204,15 @@ const VerificationScreen = ({ route, navigation }) => {
         </View>
       </View>
       <View>
-        <AuthButton onPress={verifyCodeHandler}>VERIFY</AuthButton>
+        <AuthButton
+          onPress={() =>
+            isRegestered
+              ? handleVerificationCode(value.trim())
+              : verifyCodeHandler()
+          }
+        >
+          VERIFY
+        </AuthButton>
       </View>
       <View style={styles.footerContainer}>
         <Text style={styles.footerText}>
