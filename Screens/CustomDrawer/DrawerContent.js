@@ -1,5 +1,6 @@
 import { DrawerContentScrollView } from "@react-navigation/drawer";
 import { useNavigation } from "@react-navigation/native";
+import { useContext } from "react";
 import {
   Image,
   ImageBackground,
@@ -10,9 +11,19 @@ import {
 } from "react-native";
 import DrawerItem from "../../components/UI/DrawerItem";
 import IconButton from "../../components/UI/IconButton";
+import { AuthContext } from "../../store/auth-context";
 
 const DrawerContent = (props) => {
   const navigation = useNavigation();
+
+  const { profileData, user } = useContext(AuthContext);
+
+  const nonVerifiedText = (
+    <Text style={{ color: "#fff", fontSize: 11, fontFamily: "roboto-regular" }}>
+      Phone not verified yet!
+      <Text style={{ fontFamily: "roboto-bold" }}> Verify now</Text>
+    </Text>
+  );
 
   return (
     <View style={styles.rootContainer}>
@@ -34,23 +45,53 @@ const DrawerContent = (props) => {
             ]}
           >
             <View style={styles.imgOuterContainer}>
-              <View style={styles.verifyIconContainer}>
+              <View style={[styles.verifyIconContainer]}>
                 <Image
                   style={styles.verifyIcon}
-                  source={require("../../assets/UserProfileScreenImages/verifyImg.png")}
+                  source={
+                    profileData &&
+                    profileData.name &&
+                    profileData.email &&
+                    profileData.is_email_verified &&
+                    profileData.mobile &&
+                    profileData.is_mobile_verified
+                      ? require("../../assets/UserProfileScreenImages/profile verified.png")
+                      : require("../../assets/UserProfileScreenImages/verifyImg.png")
+                  }
                 />
               </View>
 
               <Image
-                style={styles.img}
-                source={require("../../assets/images/profile picture.png")}
+                style={[styles.img, { borderRadius: 100 }]}
+                source={
+                  profileData && profileData.profile_picture !== null
+                    ? {
+                        uri: `http://dev23.finder.com.bd/api/v1/${profileData.profile_picture}`,
+                      }
+                    : require("../../assets/UserProfileScreenImages/profile picture.png")
+                }
               />
               <View>
-                <Text style={styles.userName}>Estiak Ahamed</Text>
+                <Text style={styles.userName}>
+                  {profileData?.name || user?.userName}
+                </Text>
                 <View style={styles.verificationContainer}>
-                  <Text style={styles.userText}>Phone not verified yet!</Text>
-                  <Text style={[styles.userText, styles.userTextBold]}>
-                    Verify Now
+                  <Text
+                    style={[
+                      !profileData?.mobile || !profileData.is_mobile_verified
+                        ? {
+                            color: "#fff",
+                            fontSize: 11,
+                            fontFamily: "roboto-regular",
+                          }
+                        : styles.profileMobile,
+                    ]}
+                  >
+                    {profileData?.mobile
+                      ? profileData.is_mobile_verified
+                        ? profileData.mobile
+                        : nonVerifiedText
+                      : "Mobile not found"}
                   </Text>
                   <IconButton
                     icon="chevron-forward-outline"
@@ -144,6 +185,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
+  profileMobile: {
+    fontFamily: "roboto-semi",
+    fontSize: 11,
+    color: "#fff",
+  },
+
   imgRootContainer: {
     flex: 1,
   },
@@ -167,6 +214,7 @@ const styles = StyleSheet.create({
   verificationContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     columnGap: 3,
   },
 

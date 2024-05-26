@@ -1,5 +1,5 @@
 // import { MaterialCommunityIcons } from "@expo/vector-icons";
-import React from "react";
+import React, { useState } from "react";
 import {
   Image,
   Pressable,
@@ -10,9 +10,174 @@ import {
   TextInput,
   View,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import IconButton from "../components/UI/IconButton";
+import { emailVerificationForCreatingUser } from "../util/auth";
 
 const ThirdScreen = ({ navigation }) => {
+  // Initializing state...****
+  const [showPassword, setShowPassword] = useState({
+    password: false,
+    reTypePassword: false,
+  });
+
+  const [inputValues, setInputValues] = useState({
+    fullName: "Shakib Ahmed",
+    email: "test@test.com",
+    password: "12345678",
+    reTypePassword: "12345678",
+  });
+
+  const [nameError, setNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [userPasswordError, setUserPasswordError] = useState("");
+  const [userReTypePasswordError, setUserReTypePasswordError] = useState("");
+  const [userPasswordMatched, setUserPasswordMatched] = useState("");
+
+  // Icon visibility handler function...****
+  const iconVisibilityHandler = (identifier) => {
+    setShowPassword((prevPass) => {
+      return { ...prevPass, [identifier]: !prevPass[identifier] };
+    });
+  };
+
+  // Generic input change handler function...****
+  const inputChangeHandler = (identifier, enteredValue) => {
+    setNameError("");
+    setEmailError("");
+    setUserPasswordError("");
+    setUserReTypePasswordError("");
+    setUserPasswordMatched("");
+
+    return setInputValues((prevInput) => {
+      return {
+        ...prevInput,
+        [identifier]: enteredValue,
+      };
+    });
+  };
+
+  // Toast handler...****
+  // Toast handler function
+  const showToast = (error) => {
+    Toast.show({
+      type: "error",
+      text1: error,
+      position: "bottom",
+    });
+  };
+
+  // Submit input handler function...
+  const submitInputValuesHandler = async () => {
+    const { fullName, email, password, reTypePassword } = inputValues;
+
+    const validNameRegex = /^[a-zA-Z\s'-]+$/;
+    const consecutiveSpecialCharsRegex = /[-'\s]{2,}/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const trimmedName = fullName.trim();
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+    const trimmedReTypePassword = reTypePassword.trim();
+
+    let nameError = "";
+    let emailError = "";
+    let passwordError = "";
+    let reTypePasswordError = "";
+    let passwordMatched = "";
+
+    // Name validation
+    if (!trimmedName) {
+      nameError = `Field can't be empty`;
+    } else if (trimmedName.length >= 32) {
+      nameError = `Name must be less than 32 characters`;
+    } else if (trimmedName.length < 2) {
+      nameError = `Name must be at least 2 characters`;
+    } else if (!validNameRegex.test(trimmedName)) {
+      nameError = `Full name can only contain alphabetic characters, spaces, hyphens, and apostrophes`;
+    } else if (consecutiveSpecialCharsRegex.test(trimmedName)) {
+      nameError = `Full name cannot have consecutive special characters (spaces, hyphens, or apostrophes)`;
+    }
+
+    // Email validation
+    if (!trimmedEmail) {
+      emailError = `Field can't be empty`;
+    } else if (!emailRegex.test(trimmedEmail)) {
+      emailError = `Please enter a valid email address`;
+    } else if (trimmedEmail.length >= 32) {
+      emailError = `Email must be less than 32 characters`;
+    }
+
+    // Password validation....
+    if (!trimmedPassword) {
+      passwordError = `Field can't be empty`;
+    } else if (trimmedPassword.length >= 20) {
+      passwordError = `Password must be less than 20 characters`;
+    } else if (trimmedPassword.length < 6) {
+      passwordError = `Password must be at least 6 characters`;
+    }
+
+    // Re typed Password validation....
+    if (!trimmedReTypePassword) {
+      reTypePasswordError = `Field can't be empty`;
+    } else if (trimmedReTypePassword.length >= 20) {
+      reTypePasswordError = `Password must be less than 20 characters`;
+    } else if (trimmedReTypePassword.length < 6) {
+      reTypePasswordError = `Password must be at least 6 characters`;
+    }
+
+    // Password not matched validation...****
+
+    if (trimmedPassword !== trimmedReTypePassword) {
+      passwordMatched = `Password not matched`;
+    }
+
+    // Updating error state...****
+    if (
+      nameError ||
+      emailError ||
+      passwordError ||
+      reTypePasswordError ||
+      passwordMatched
+    ) {
+      setNameError(nameError);
+      setEmailError(emailError);
+      setUserPasswordError(passwordError);
+      setUserReTypePasswordError(reTypePasswordError);
+      setUserPasswordMatched(passwordMatched);
+      return;
+    } else {
+      setNameError("");
+      setEmailError("");
+      setUserPasswordError("");
+      setUserReTypePasswordError("");
+      setUserPasswordMatched("");
+    }
+
+    // If validation succeeded....
+    try {
+      const response = await emailVerificationForCreatingUser(trimmedEmail);
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          showToast("Request not found");
+        } else if (response.status === 500) {
+          showToast("Server error");
+        } else {
+          const data = await response.json();
+          showToast(data.message || "An error occurred");
+        }
+      } else {
+        const data = await response.json();
+        console.log(data);
+
+        showToast(data.message);
+        navigation.navigate("VerificationScreen");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -36,54 +201,97 @@ const ThirdScreen = ({ navigation }) => {
           <View style={[styles.inputContainer, styles.specificStyles]}>
             <Text style={styles.label}>Full Name</Text>
             <TextInput
+              onChangeText={(enteredValue) =>
+                inputChangeHandler("fullName", enteredValue)
+              }
               style={styles.input}
               placeholder="Enter name"
               placeholderTextColor="#BFBFBF"
+              value={inputValues.fullName}
             />
           </View>
+          {nameError ? <Text style={styles.errorText}>{nameError}</Text> : ""}
           <View style={[styles.inputContainer, styles.specificStyles]}>
             <Text style={styles.label}>Email</Text>
             <TextInput
+              onChangeText={(enteredValue) =>
+                inputChangeHandler("email", enteredValue)
+              }
               style={styles.input}
               autoCapitalize="none"
               keyboardType="email-address"
               placeholder="Enter email"
               placeholderTextColor="#BFBFBF"
+              value={inputValues.email}
             />
           </View>
+          {emailError ? <Text style={styles.errorText}>{emailError}</Text> : ""}
           {/* Password Input Container */}
           <View style={[styles.inputContainer, styles.specificStyles]}>
             <Text style={styles.label}>Password</Text>
-            <View style={styles.passwordContainer}>
+            <View style={[styles.passwordContainer, { flexDirection: "row" }]}>
               <TextInput
-                style={styles.input}
+                onChangeText={(enteredValue) =>
+                  inputChangeHandler("password", enteredValue)
+                }
+                style={[styles.input, { flex: 1 }]}
                 autoCapitalize="none"
-                secureTextEntry={true}
+                secureTextEntry={!showPassword.password}
                 placeholder="Enter password"
                 placeholderTextColor="#BFBFBF"
+                value={inputValues.password}
               />
-              <Image
-                source={require("../assets/images/hidden.png")}
-                style={styles.eyeImg}
-              />
+              <Pressable onPress={() => iconVisibilityHandler("password")}>
+                <Image
+                  source={
+                    !showPassword.password
+                      ? require("../assets/images/hidden.png")
+                      : require("../assets/images/visibility.png")
+                  }
+                  style={styles.eyeImg}
+                />
+              </Pressable>
             </View>
           </View>
+          {userPasswordError ? (
+            <Text style={styles.errorText}>{userPasswordError}</Text>
+          ) : (
+            ""
+          )}
           <View style={[styles.inputContainer, styles.specificStyles]}>
             <Text style={styles.label}>Retype Password</Text>
-            <View style={styles.passwordContainer}>
+            <View style={[styles.passwordContainer, { flexDirection: "row" }]}>
               <TextInput
-                style={styles.input}
+                onChangeText={(enteredValue) =>
+                  inputChangeHandler("reTypePassword", enteredValue)
+                }
+                style={[styles.input, { flex: 1 }]}
                 autoCapitalize="none"
-                secureTextEntry={true}
+                secureTextEntry={!showPassword.reTypePassword}
                 placeholder="Enter password"
                 placeholderTextColor="#BFBFBF"
+                value={inputValues.reTypePassword}
               />
-              <Image
-                source={require("../assets/images/hidden.png")}
-                style={styles.eyeImg}
-              />
+              <Pressable
+                onPress={() => iconVisibilityHandler("reTypePassword")}
+              >
+                <Image
+                  source={
+                    !showPassword.reTypePassword
+                      ? require("../assets/images/hidden.png")
+                      : require("../assets/images/visibility.png")
+                  }
+                  style={styles.eyeImg}
+                />
+              </Pressable>
             </View>
           </View>
+          {userReTypePasswordError ? (
+            <Text style={styles.errorText}>{userReTypePasswordError}</Text>
+          ) : (
+            <Text style={styles.errorText}>{userPasswordMatched}</Text>
+          )}
+
           {/* Policy Text */}
           <View style={styles.policyTextContainer}>
             <Text style={styles.policyText}>
@@ -105,7 +313,10 @@ const ThirdScreen = ({ navigation }) => {
           </View>
           {/* Button */}
           <View style={styles.btnContainerOuter}>
-            <Pressable style={styles.btnContainerInner}>
+            <Pressable
+              onPress={submitInputValuesHandler}
+              style={styles.btnContainerInner}
+            >
               <Text style={styles.btnText}>CREATE ACCOUNT</Text>
             </Pressable>
           </View>
@@ -154,6 +365,9 @@ const ThirdScreen = ({ navigation }) => {
             </View>
           </View>
         </View>
+        <View>
+          <Toast />
+        </View>
       </View>
     </ScrollView>
   );
@@ -165,6 +379,14 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 40,
     paddingHorizontal: 20,
+  },
+
+  errorText: {
+    color: "#D2042D",
+    fontSize: 12,
+    marginTop: 2,
+    marginLeft: 3,
+    fontFamily: "roboto-regular",
   },
 
   innerContainer: {
@@ -224,13 +446,10 @@ const styles = StyleSheet.create({
     marginVertical: 15,
   },
   btnContainerInner: {
-    // backgroundColor: "#D94638",
-    backgroundColor: "rgba(217,70,56, 0.55)",
-    // paddingVertical: 14,
+    backgroundColor: "#D94638",
     paddingVertical: 13.3,
     paddingHorizontal: 8,
     borderRadius: 6,
-    // opacity: 0.6,
   },
   btnText: {
     textAlign: "center",

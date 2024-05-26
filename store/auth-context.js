@@ -1,20 +1,19 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createContext, useState } from "react";
+import { createContext, useCallback, useMemo, useState } from "react";
 
 export const AuthContext = createContext();
 
 const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [fullNameData, setFullNameData] = useState();
-  const [updatedEmail, setUpdatedEmail] = useState(null);
 
-  // Function to check if user is logged in
-  const checkLoginStatus = async () => {
+  const [fullNameData, setFullNameData] = useState();
+  const [profileData, setProfileData] = useState(null);
+  const [updatedEmail, setUpdatedEmail] = useState("");
+
+  const checkLoginStatus = useCallback(async () => {
     try {
       const userData = await AsyncStorage.getItem("userData");
       const parsedUserData = JSON.parse(userData);
-
-      // console.log("---userdata", userData);
 
       if (
         parsedUserData &&
@@ -23,9 +22,7 @@ const AuthContextProvider = ({ children }) => {
         parsedUserData.timestamp
       ) {
         const currentTime = Date.now();
-
         const tokenObtainedTime = parsedUserData.timestamp;
-
         const expiredIn = parsedUserData.expires_in * 1000;
 
         if (currentTime < tokenObtainedTime + expiredIn) {
@@ -33,74 +30,83 @@ const AuthContextProvider = ({ children }) => {
           return parsedUserData;
         }
       }
-
       return null;
     } catch (error) {
       console.log(error);
     }
-  };
+  }, []);
 
-  // Function to log in user
-  const login = async (userData) => {
+  const login = useCallback(async (userData) => {
     try {
       const timestamp = Date.now();
-
       const userDataWithTimeStamp = { ...userData, timestamp };
-
       await AsyncStorage.setItem(
         "userData",
         JSON.stringify(userDataWithTimeStamp)
       );
-
-      // console.log("setting data -----", userData);
-
       setUser(userData);
     } catch (error) {
       console.log(error);
     }
-  };
+  }, []);
 
-  // Function to log out user
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await AsyncStorage.clear();
       setUser(null);
     } catch (error) {
       console.log(error);
     }
-  };
+  }, []);
 
-  // Function to get user data
-  const getUserData = () => {
+  const getUserData = useCallback(() => {
     return user;
-  };
+  }, [user]);
 
-  const fullNameDataFunc = (data) => {
+  const fullNameDataFunc = useCallback((data) => {
     const newName = data?.data?.name;
     setFullNameData(newName);
+  }, []);
+
+  const getProfileData = useCallback((profileData) => {
+    setProfileData(profileData);
+  }, []);
+
+  const getUpdatedEmail = (enteredEmail) => {
+    setUpdatedEmail(enteredEmail);
   };
 
-  // New email function
-  const getUpdatedEmail = (updatedEmail) => {
-    setUpdatedEmail(updatedEmail);
-  };
+  const contextValue = useMemo(
+    () => ({
+      login,
+      logout,
+      checkLoginStatus,
+      getUserData,
+      user,
+      fullNameDataFunc,
+      fullNameData,
+      getProfileData,
+      profileData,
+      updatedEmail,
+      getUpdatedEmail,
+    }),
+    [
+      login,
+      logout,
+      checkLoginStatus,
+      getUserData,
+      user,
+      fullNameDataFunc,
+      fullNameData,
+      getProfileData,
+      profileData,
+      updatedEmail,
+      getUpdatedEmail,
+    ]
+  );
 
   return (
-    <AuthContext.Provider
-      value={{
-        login,
-        logout,
-        checkLoginStatus,
-        getUserData,
-        user,
-        fullNameDataFunc,
-        fullNameData,
-        getUpdatedEmail,
-        updatedEmail,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
 

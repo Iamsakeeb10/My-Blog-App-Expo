@@ -111,7 +111,7 @@ const ChangePasswordScreen = ({ navigation }) => {
       setCurPassError(`Current password field can't be empty`);
     } else if (curPassword.trim().length < 6) {
       setCurPassError(`Password must be at least 6 characters`);
-    } else if (curPassword.trim().length > 20) {
+    } else if (curPassword.trim().length >= 20) {
       setCurPassError(`Password must be less than 20 characters`);
     } else {
       setCurPassError("");
@@ -121,7 +121,7 @@ const ChangePasswordScreen = ({ navigation }) => {
       setNewPassError(`New password field can't be empty`);
     } else if (newPass.trim().length < 6) {
       setNewPassError("Password must be at least 6 characters");
-    } else if (newPass.trim().length > 20) {
+    } else if (newPass.trim().length >= 20) {
       setNewPassError(`Password must be less than 20 characters`);
     } else {
       setNewPassError("");
@@ -131,7 +131,7 @@ const ChangePasswordScreen = ({ navigation }) => {
       setConfirmNewPassError(`Confirm new password field can't be empty`);
     } else if (confirmNewPassword.trim().length < 6) {
       setConfirmNewPassError(`Password must be at least 6 characters`);
-    } else if (confirmNewPassword.trim().length > 20) {
+    } else if (confirmNewPassword.trim().length >= 20) {
       setConfirmNewPassError(`Password must be less than 20 characters`);
     } else {
       setConfirmNewPassError("");

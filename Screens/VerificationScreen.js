@@ -88,7 +88,6 @@ const VerificationScreen = ({ route, navigation }) => {
         const data = await response.json();
         showToast(data.message || "Verification failed");
       } else {
-        getUpdatedEmail(updatedEmail);
         showAlertHandler();
       }
     } catch (error) {

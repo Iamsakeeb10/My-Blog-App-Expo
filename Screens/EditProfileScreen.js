@@ -22,8 +22,7 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
   const bottomSheetRef = useRef(null);
   const route = useRoute();
   const { userProfile = {} } = route.params || {};
-  const { user, fullNameDataFunc, fullNameData, updatedEmail } =
-    useContext(AuthContext);
+  const { user, fullNameDataFunc, profileData } = useContext(AuthContext);
 
   const [snapPoints, setSnapPoints] = useState(["50%", "70%"]);
   const [bottomSheetIndex, setBottomSheetIndex] = useState(-1);
@@ -191,7 +190,7 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
       setBottomSheetPasswordInputError(
         `Password must be at least 6 characters`
       );
-    } else if (bottomSheetPasswordInput.trim().length > 20) {
+    } else if (bottomSheetPasswordInput.trim().length >= 20) {
       setBottomSheetPasswordInputError(
         `Password must be less than 20 characters`
       );
@@ -200,7 +199,7 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
     }
 
     const password = bottomSheetPasswordInput.trim();
-    if (!password || password.length < 6 || password.length > 20) {
+    if (!password || password.length < 6 || password.length >= 20) {
       return;
     }
 
@@ -298,7 +297,7 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
               autoCapitalize="none"
               placeholder={userProfile && userProfile.email ? "" : "Email"}
               placeholderTextColor="#7B7B7B"
-              value={updatedEmail}
+              value={profileData.email}
               onFocus={() => inputFocusHandler("email")}
               onBlur={() => inputBlurHandler("email")}
             />

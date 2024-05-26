@@ -44,7 +44,7 @@ const EnterNewEmailScreen = ({ navigation, route }) => {
 
     if (!trimmedEmail) {
       emailError = "Email field can't be empty";
-    } else if (trimmedEmail.length > 32) {
+    } else if (trimmedEmail.length >= 32) {
       emailError = "Email must be less than 32 characters";
     } else if (!isValidEmail) {
       emailError = "Please enter a valid email address";
@@ -73,6 +73,7 @@ const EnterNewEmailScreen = ({ navigation, route }) => {
         }
       } else {
         const data = await response.json();
+
         showToast(data.message);
         getUpdatedEmail(trimmedEmail);
         navigation.pop();

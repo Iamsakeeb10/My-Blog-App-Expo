@@ -13,11 +13,11 @@ import IconButton from "../components/UI/IconButton";
 import { AuthContext } from "../store/auth-context";
 import { fetchProfileData } from "../util/auth";
 
-const UserProfileScreen = ({ navigation, route }) => {
+const UserProfileScreen = ({ navigation }) => {
   const [userProfile, setUserProfile] = useState(null);
 
   const [loading, setIsLoading] = useState(true);
-  const { user, fullNameData, getUpdatedEmail } = useContext(AuthContext);
+  const { user, fullNameData } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -25,13 +25,12 @@ const UserProfileScreen = ({ navigation, route }) => {
         const data = await fetchProfileData(user);
 
         setUserProfile(data);
-        getUpdatedEmail(data.email);
         setIsLoading(false);
       }
     };
 
     fetchProfile();
-  }, [user, getUpdatedEmail]);
+  }, [user]);
 
   useEffect(() => {
     if (userProfile && fullNameData) {

@@ -208,3 +208,59 @@ export const verifyEmail = async (updatedEmail, enteredCode, userId, user) => {
     console.log(error);
   }
 };
+
+// Change email api req...
+const EMAIL_URL_FOR_CREATING_USER = BASE_URL + "/users/verification-code";
+
+export const emailVerificationForCreatingUser = async (email, user) => {
+  const payload = {
+    verification_entity: email,
+  };
+
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (user && user.access_token) {
+    headers.Authorization = `Bearer ${user.access_token}`;
+  }
+
+  try {
+    const response = await fetch(EMAIL_URL_FOR_CREATING_USER, {
+      method: "POST",
+      headers: headers,
+
+      body: JSON.stringify(payload),
+    });
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// // Creating user api req...
+// const CREATING_USER_URL = BASE_URL + "/users/customers/registration";
+
+// export const creatingUser = async (name, email, code, password) => {
+//   const payload = {
+//     name: name,
+//     email: email,
+//     verification_code: code,
+//     password: encodeBase64(password),
+//   };
+
+//   try {
+//     const response = await fetch(CREATING_USER_URL, {
+//       method: "POST",
+//       headers: {
+//         "Content-type": "application/json",
+//       },
+//       body: JSON.stringify(payload),
+//     });
+
+//     return response;
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };

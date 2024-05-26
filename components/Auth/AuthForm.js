@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { AuthContext } from "../../store/auth-context";
-import { loginUser } from "../../util/auth";
+import { fetchProfileData, loginUser } from "../../util/auth";
 import AuthButton from "../UI/AuthButton";
 import IconButton from "../UI/IconButton";
 
@@ -28,7 +28,8 @@ const AuthForm = () => {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { login, checkLoginStatus } = useContext(AuthContext);
+  const { login, checkLoginStatus, user, getProfileData } =
+    useContext(AuthContext);
 
   // On Focus input state
   const [isFocus, setIsFocused] = useState({
@@ -63,7 +64,7 @@ const AuthForm = () => {
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     setInvalidEmail(
-      email.length > 32 ? "Email must be less than 32 characters" : null
+      email.length >= 32 ? "Email must be less than 32 characters" : null
     );
 
     return emailRegex.test(email);
@@ -72,7 +73,7 @@ const AuthForm = () => {
   // Validating Password...
   const validatePassword = (password) => {
     setInvalidPassword(
-      password.length > 20 ? "Password must be less than 20 characters" : null
+      password.length >= 20 ? "Password must be less than 20 characters" : null
     );
 
     return password.length >= 6;
@@ -146,24 +147,35 @@ const AuthForm = () => {
       setLoading(true);
       const loginData = await loginUser(email, password);
 
-      if (loginData && loginData.access_token) {
-        // Successful login
-        const parts = email.split("@");
-        const userName = parts[0];
-        const userData = {
-          ...loginData,
-          userName,
-          email,
-        };
+      if (loginData) {
+        if (loginData.access_token) {
+          // Successful login
+          const parts = email.split("@");
+          const userName = parts[0];
+          const userData = {
+            ...loginData,
+            userName,
+            email,
+          };
 
-        await login(userData);
+          await login(userData);
 
-        await checkLoginStatus();
+          const profileData = await fetchProfileData(loginData);
 
-        navigation.replace("Drawer"); // Navigating to My Blogs screen...
-      } else if (loginData && loginData.message) {
-        // Unsuccessful login
-        showToast(loginData.message);
+          if (profileData) {
+            getProfileData(profileData);
+          }
+
+          await checkLoginStatus();
+
+          navigation.replace("Drawer"); // Navigating to My Blogs screen...
+        } else if (loginData.message) {
+          // Unsuccessful login
+          showToast(loginData.message);
+        }
+      } else {
+        // Handle null loginData
+        showToast("Login failed. Please try again.");
       }
     } catch (error) {
       showToast(error.message);
