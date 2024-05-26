@@ -176,7 +176,7 @@ const ThirdScreen = ({ navigation }) => {
           fullName: trimmedName,
           email: trimmedEmail,
           password: trimmedReTypePassword,
-          isRegestered: true,
+          isRegistered: true,
         });
       }
     } catch (error) {

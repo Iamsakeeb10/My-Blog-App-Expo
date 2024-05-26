@@ -9,7 +9,7 @@ import {
 import Toast from "react-native-toast-message";
 import Alert from "../components/UI/Alert";
 import { AuthContext } from "../store/auth-context";
-import { creatingUser, verifyEmail } from "../util/auth";
+import { creatingUser, verifyEmail, verifyMobileNumber } from "../util/auth";
 import AuthButton from "./../components/UI/AuthButton";
 
 const CELL_COUNT = 6;
@@ -18,17 +18,18 @@ const VerificationScreen = ({ route, navigation }) => {
   const [value, setValue] = useState("");
   const [codeError, setCodeError] = useState("");
   const [showAlert, setShowAlert] = useState(false);
+  const [showMobileAlert, setShowMobileAlert] = useState(false);
 
-  const { updatedEmail, user, getUpdatedEmail } = useContext(AuthContext);
+  const { updatedEmail, user } = useContext(AuthContext);
   // Necessary for sending api req....
   const {
     userId = {},
     fullName,
     email,
     password,
-    isRegestered,
+    isRegistered,
+    mobile,
   } = route.params || {};
-  console.log(fullName, email, password, isRegestered);
 
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
   const [props, getCellOnLayoutHandler] = useClearByFocusCell({
@@ -40,8 +41,15 @@ const VerificationScreen = ({ route, navigation }) => {
   const showAlertHandler = () => {
     setShowAlert(true);
   };
+
+  const showMobileAlertHandler = () => {
+    setShowMobileAlert(true);
+  };
   const closeAlertHandler = () => {
     navigation.replace("EditProfileScreen");
+  };
+  const closeMobileAlertHandler = () => {
+    navigation.replace("Drawer");
   };
 
   // Toast handler function
@@ -102,6 +110,7 @@ const VerificationScreen = ({ route, navigation }) => {
     }
   };
 
+  // Email verification
   const verifyCodeForEmailChange = async () => {
     const trimmedValue = value.trim();
 
@@ -118,6 +127,44 @@ const VerificationScreen = ({ route, navigation }) => {
         showToast(data.message || "Verification failed");
       } else {
         showAlertHandler();
+      }
+    } catch (error) {
+      showToast(error.message);
+    }
+  };
+
+  // Mobile verification
+  const verifyMobileHandler = async (code) => {
+    const trimmedValue = value.trim();
+
+    if (!trimmedValue) {
+      setCodeError(`Field can't be empty`);
+      return;
+    }
+
+    if (trimmedValue.length !== 6) {
+      setCodeError("Empty field found");
+      return;
+    }
+
+    const isValid = /^\d+$/.test(value);
+
+    if (!isValid) {
+      setCodeError("Numbers required");
+      return;
+    }
+
+    setCodeError("");
+
+    try {
+      const response = await verifyMobileNumber(mobile, code, user);
+      const data = await response.json();
+      console.log("data---", data);
+
+      if (!response.ok) {
+        showToast(data.message || "Verification failed");
+      } else {
+        showMobileAlertHandler();
       }
     } catch (error) {
       showToast(error.message);
@@ -158,7 +205,7 @@ const VerificationScreen = ({ route, navigation }) => {
       <View style={{ marginTop: 2 }}>
         <Text style={styles.verificationTextSmall}>
           We sent a security code to{" "}
-          <Text>{updatedEmail ? updatedEmail : email}</Text>
+          <Text>{updatedEmail ? email : mobile}</Text>
         </Text>
       </View>
       <View>
@@ -205,11 +252,15 @@ const VerificationScreen = ({ route, navigation }) => {
       </View>
       <View>
         <AuthButton
-          onPress={() =>
-            isRegestered
-              ? handleVerificationCode(value.trim())
-              : verifyCodeHandler()
-          }
+          onPress={() => {
+            if (isRegistered) {
+              handleVerificationCode(value.trim());
+            } else if (mobile && value.trim()) {
+              verifyMobileHandler(value.trim());
+            } else {
+              verifyCodeHandler();
+            }
+          }}
         >
           VERIFY
         </AuthButton>
@@ -226,6 +277,14 @@ const VerificationScreen = ({ route, navigation }) => {
           message="Your email has been changed successfully"
           showAlert={showAlert}
           hideAlertFunc={closeAlertHandler}
+        />
+      </View>
+      <View>
+        <Alert
+          title="Updated!"
+          message="Your phone number has been successfully verified"
+          showAlert={showMobileAlert}
+          hideAlertFunc={closeMobileAlertHandler}
         />
       </View>
       <View style={{ marginTop: 260 }}>

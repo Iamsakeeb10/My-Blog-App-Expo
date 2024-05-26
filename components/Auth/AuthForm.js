@@ -18,7 +18,7 @@ import IconButton from "../UI/IconButton";
 
 const AuthForm = () => {
   const [inputValues, setInputValues] = useState({
-    email: "shakib18@test.com",
+    email: "rakib10@test.com",
     password: "12345678",
   });
 
@@ -168,7 +168,16 @@ const AuthForm = () => {
 
           await checkLoginStatus();
 
-          navigation.replace("Drawer"); // Navigating to My Blogs screen...
+          if (
+            (profileData && !profileData.mobile) ||
+            !profileData.is_mobile_verified
+          ) {
+            navigation.replace("AddMobileNumberScreen", {
+              profileData: profileData,
+            }); // Navigating to Add phone number screen...
+          } else {
+            navigation.replace("Drawer"); // Navigating to My Blogs screen...
+          }
         } else if (loginData.message) {
           // Unsuccessful login
           showToast(loginData.message);

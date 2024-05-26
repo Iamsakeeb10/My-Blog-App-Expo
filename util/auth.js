@@ -266,3 +266,55 @@ export const creatingUser = async (name, email, code, password) => {
     console.log(error);
   }
 };
+
+// Api req to add mobile number...
+export const ADD_MOBILE_NUMBER_URL = BASE_URL + "/users/verification-code";
+
+export const addMobileNumber = async (mobileNumber, user) => {
+  const payload = {
+    verification_entity: mobileNumber,
+  };
+
+  try {
+    const response = await fetch(CHANGE_USER_EMAIL_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.access_token}`,
+      },
+
+      body: JSON.stringify(payload),
+    });
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// Adding mobile number through verification code...
+
+const ADD_MOBILE_NUMBER_OTP_URL =
+  "http://dev23.finder.com.bd:8010/users/customers/profile/change-contact-info";
+
+export const verifyMobileNumber = async (phoneNumber, enteredCode, user) => {
+  const payload = {
+    verification_entity: phoneNumber,
+    verification_code: enteredCode,
+  };
+
+  try {
+    const response = await fetch(ADD_MOBILE_NUMBER_OTP_URL, {
+      method: "PATCH",
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${user.access_token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};

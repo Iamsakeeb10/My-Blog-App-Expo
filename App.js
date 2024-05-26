@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import AboutScreen from "./Screens/AboutScreen";
+import AddMobileNumber from "./Screens/AddMobileNumber";
 import ChangePasswordScreen from "./Screens/ChangePasswordScreen";
 import DrawerContent from "./Screens/CustomDrawer/DrawerContent";
 import DriverScreen from "./Screens/DriverScreen";
@@ -414,7 +415,7 @@ const App = () => {
                   ),
                 })}
               />
-              {/* Disabled screen till now - Need to add navigate or replace to navigate to this screen.... */}
+              {/* Verification screen.... */}
               <Stack.Screen
                 name="VerificationScreen"
                 component={VerificationScreen}
@@ -436,6 +437,37 @@ const App = () => {
                       <Pressable
                         style={({ pressed }) => [pressed && { opacity: 0.7 }]}
                         onPress={() => navigation.goBack()}
+                      >
+                        <Image
+                          style={styles.closeIcon}
+                          source={require("./assets/VerificationScreenIcons/Close.png")}
+                        />
+                      </Pressable>
+                    </View>
+                  ),
+                })}
+              />
+              <Stack.Screen
+                name="AddMobileNumberScreen"
+                component={AddMobileNumber}
+                options={({ navigation }) => ({
+                  headerStyle: {
+                    backgroundColor: "#FFF",
+                  },
+
+                  headerTitle: "",
+
+                  headerShadowVisible: false,
+
+                  contentStyle: {
+                    backgroundColor: "#FAFAFA",
+                  },
+
+                  headerLeft: () => (
+                    <View style={{ marginLeft: 12 }}>
+                      <Pressable
+                        style={({ pressed }) => [pressed && { opacity: 0.7 }]}
+                        onPress={() => navigation.replace("Drawer")}
                       >
                         <Image
                           style={styles.closeIcon}
