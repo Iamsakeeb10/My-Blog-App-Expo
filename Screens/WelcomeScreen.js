@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { useContext, useEffect } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
@@ -5,7 +6,7 @@ import { AuthContext } from "../store/auth-context";
 
 function WelcomeScreen() {
   const navigation = useNavigation();
-  const { checkLoginStatus } = useContext(AuthContext);
+  const { checkLoginStatus, profileData } = useContext(AuthContext);
 
   useEffect(() => {
     const checkForLogin = async () => {
@@ -13,7 +14,12 @@ function WelcomeScreen() {
 
       try {
         if (userData && userData.access_token) {
-          navigation.replace("Drawer");
+          const shouldAddMobile = await AsyncStorage.getItem("shouldAddMobile");
+          if (shouldAddMobile === "true") {
+            navigation.replace("AddMobileNumberScreen");
+          } else if (shouldAddMobile === "false") {
+            navigation.replace("Drawer");
+          }
         } else {
           navigation.replace("FirstScreen");
         }

@@ -1,5 +1,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createContext, useCallback, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 export const AuthContext = createContext();
 
@@ -7,8 +13,17 @@ const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   const [fullNameData, setFullNameData] = useState();
-  const [profileData, setProfileData] = useState(null);
   const [updatedEmail, setUpdatedEmail] = useState("");
+  const [profileData, setProfileData] = useState("");
+  const [uploadedImage, setUploadedImage] = useState(null);
+
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
+
+  useEffect(() => {
+    setUploadedImage(null);
+  }, [user]);
 
   const checkLoginStatus = useCallback(async () => {
     try {
@@ -27,12 +42,18 @@ const AuthContextProvider = ({ children }) => {
 
         if (currentTime < tokenObtainedTime + expiredIn) {
           setUser(parsedUserData);
+
+          const storedProfileData = await AsyncStorage.getItem("profileData");
+          if (storedProfileData) {
+            setProfileData(JSON.parse(storedProfileData));
+          }
+
           return parsedUserData;
         }
       }
       return null;
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }, []);
 
@@ -68,12 +89,21 @@ const AuthContextProvider = ({ children }) => {
     setFullNameData(newName);
   }, []);
 
-  const getProfileData = useCallback((profileData) => {
-    setProfileData(profileData);
+  const getProfileData = useCallback(async (profileData) => {
+    try {
+      await AsyncStorage.setItem("profileData", JSON.stringify(profileData));
+      setProfileData(profileData);
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   const getUpdatedEmail = (enteredEmail) => {
     setUpdatedEmail(enteredEmail);
+  };
+
+  const getUploadedImage = (image) => {
+    setUploadedImage(image);
   };
 
   const contextValue = useMemo(
@@ -89,6 +119,8 @@ const AuthContextProvider = ({ children }) => {
       profileData,
       updatedEmail,
       getUpdatedEmail,
+      getUploadedImage,
+      uploadedImage,
     }),
     [
       login,
@@ -102,6 +134,8 @@ const AuthContextProvider = ({ children }) => {
       profileData,
       updatedEmail,
       getUpdatedEmail,
+      getUploadedImage,
+      uploadedImage,
     ]
   );
 

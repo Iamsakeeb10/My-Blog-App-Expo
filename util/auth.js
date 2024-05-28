@@ -318,3 +318,62 @@ export const verifyMobileNumber = async (phoneNumber, enteredCode, user) => {
     console.log(error);
   }
 };
+
+// Uploading image to api..
+const IMAGE_UPLOADING_URL = BASE_URL + "/users/customers/profile";
+
+export const uploadImageToApi = async (pickedImage, user) => {
+  try {
+    const formData = new FormData();
+    formData.append("profile_picture", {
+      uri: pickedImage,
+      name: "profile_image.jpg",
+      type: "image/jpg",
+    });
+
+    const response = await fetch(IMAGE_UPLOADING_URL, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${user.access_token}`,
+      },
+      body: formData,
+    });
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// Deleting image to api..
+const DELETE_IMAGE_UPLOADING_URL = BASE_URL + "/users/customers/profile";
+
+export const deleteImageFromAPI = async (pickedImage, user) => {
+  try {
+    const formData = new FormData();
+
+    if (pickedImage) {
+      formData.append("profile_picture", {
+        uri: pickedImage,
+        name: "profile_image.jpg",
+        type: "image/jpg",
+      });
+    } else {
+      formData.append("profile_picture", "");
+    }
+
+    const response = await fetch(DELETE_IMAGE_UPLOADING_URL, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${user.access_token}`,
+      },
+      body: formData,
+    });
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};

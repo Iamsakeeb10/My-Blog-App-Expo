@@ -46,6 +46,14 @@ const DrawerNavigator = () => {
   const navigation = useNavigation();
   const { logout } = useContext(AuthContext);
 
+  const [drawerScreenBottomSheetOpen, setDrawerScreenBottomSheetOpen] =
+    useState(false);
+  console.log(drawerScreenBottomSheetOpen);
+
+  const drawerScreenBottomSheetHandler = (open) => {
+    setDrawerScreenBottomSheetOpen(open);
+  };
+
   const logoutHandler = async () => {
     try {
       await logout();
@@ -96,7 +104,9 @@ const DrawerNavigator = () => {
             </View>
           ),
           headerStyle: {
-            backgroundColor: "#FAFAFA",
+            backgroundColor: drawerScreenBottomSheetOpen
+              ? "rgba(30,30,30,0.4)"
+              : "#FAFAFA",
             elevation: 0,
           },
           headerTintColor: "#000",
@@ -109,8 +119,15 @@ const DrawerNavigator = () => {
           },
         }}
         name="User"
-        component={UserProfileScreen}
-      />
+        // component={UserProfileScreen}
+      >
+        {(props) => (
+          <UserProfileScreen
+            {...props}
+            drawerScreenBottomSheetHandler={drawerScreenBottomSheetHandler}
+          />
+        )}
+      </Drawer.Screen>
       <Drawer.Screen
         options={() => ({
           drawerLabel: () => (
@@ -439,7 +456,7 @@ const App = () => {
                         onPress={() => navigation.goBack()}
                       >
                         <Image
-                          style={styles.closeIcon}
+                          style={styles.closeIconVerify}
                           source={require("./assets/VerificationScreenIcons/Close.png")}
                         />
                       </Pressable>
@@ -450,33 +467,6 @@ const App = () => {
               <Stack.Screen
                 name="AddMobileNumberScreen"
                 component={AddMobileNumber}
-                options={({ navigation }) => ({
-                  headerStyle: {
-                    backgroundColor: "#FFF",
-                  },
-
-                  headerTitle: "",
-
-                  headerShadowVisible: false,
-
-                  contentStyle: {
-                    backgroundColor: "#FAFAFA",
-                  },
-
-                  headerLeft: () => (
-                    <View style={{ marginLeft: 12 }}>
-                      <Pressable
-                        style={({ pressed }) => [pressed && { opacity: 0.7 }]}
-                        onPress={() => navigation.replace("Drawer")}
-                      >
-                        <Image
-                          style={styles.closeIcon}
-                          source={require("./assets/VerificationScreenIcons/Close.png")}
-                        />
-                      </Pressable>
-                    </View>
-                  ),
-                })}
               />
               <Stack.Screen
                 name="ChangePasswordScreen"
@@ -545,5 +535,11 @@ const styles = StyleSheet.create({
     width: 23,
     height: 23,
     marginTop: 8,
+  },
+  closeIconVerify: {
+    width: 23,
+    height: 23,
+    marginTop: 8,
+    marginLeft: 4,
   },
 });

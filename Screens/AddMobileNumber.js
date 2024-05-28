@@ -1,5 +1,9 @@
-import React, { useContext, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
 import {
+  Image,
+  Pressable,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
@@ -12,12 +16,20 @@ import { AuthContext } from "../store/auth-context";
 import { addMobileNumber } from "../util/auth";
 
 const AddMobileNumber = ({ navigation, route }) => {
-  const [isFocus, setIsFocus] = useState(false);
-  const [enteredNumber, setEnteredNumber] = useState("+880");
-  const [numberError, setNumberError] = useState("");
-  const { user } = useContext(AuthContext);
   const { profileData = {} } = route.params || {};
-  console.log("addmobile----", profileData);
+  const { user } = useContext(AuthContext);
+  const initialNumber = profileData.mobile ? `${profileData.mobile}` : "+880";
+
+  const [isFocus, setIsFocus] = useState(false);
+  const [enteredNumber, setEnteredNumber] = useState(initialNumber);
+  const [numberError, setNumberError] = useState("");
+
+  useEffect(() => {
+    const setShouldAddMobile = async () => {
+      await AsyncStorage.setItem("shouldAddMobile", "true");
+    };
+    setShouldAddMobile();
+  }, []);
 
   const numberChangeHandler = (enteredValue) => {
     if (numberError) setNumberError("");
@@ -63,6 +75,7 @@ const AddMobileNumber = ({ navigation, route }) => {
       const data = await response.json();
 
       if (response.ok) {
+        await AsyncStorage.setItem("shouldAddMobile", "false");
         Toast.show({
           type: "success",
           text1: data.message,
@@ -97,8 +110,40 @@ const AddMobileNumber = ({ navigation, route }) => {
     }
   };
 
+  useLayoutEffect(() => {
+    const setMobileStorageAndNavigate = async () => {
+      await AsyncStorage.setItem("shouldAddMobile", "false");
+      navigation.replace("Drawer");
+    };
+
+    navigation.setOptions({
+      headerStyle: {
+        backgroundColor: "#FFF",
+      },
+      headerTitle: "",
+      headerShadowVisible: false,
+      contentStyle: {
+        backgroundColor: "#FAFAFA",
+      },
+      headerLeft: () => (
+        <View style={{ marginLeft: 12 }}>
+          <Pressable
+            style={({ pressed }) => [pressed && { opacity: 0.7 }]}
+            onPress={setMobileStorageAndNavigate}
+          >
+            <Image
+              style={styles.closeIcon}
+              source={require("../assets/VerificationScreenIcons/Close.png")}
+            />
+          </Pressable>
+        </View>
+      ),
+    });
+  }, [navigation]);
+
   return (
     <View style={styles.rootContainer}>
+      <StatusBar barStyle="dark-content" />
       <View>
         <Text style={styles.headerText}>
           {profileData && !profileData.mobile
@@ -139,7 +184,12 @@ const AddMobileNumber = ({ navigation, route }) => {
         <AuthButton onPress={submitNumberHandler}>NEXT</AuthButton>
       </View>
       <View style={styles.footerTextContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate("Drawer")}>
+        <TouchableOpacity
+          onPress={async () => {
+            await AsyncStorage.setItem("shouldAddMobile", "false");
+            navigation.navigate("Drawer");
+          }}
+        >
           <Text style={styles.footerText}>Skip for now</Text>
         </TouchableOpacity>
       </View>
@@ -164,6 +214,12 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginLeft: 3,
     fontFamily: "roboto-regular",
+  },
+
+  closeIcon: {
+    width: 23,
+    height: 23,
+    marginTop: 8,
   },
 
   mobileLabel: {

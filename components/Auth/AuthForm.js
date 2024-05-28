@@ -18,7 +18,7 @@ import IconButton from "../UI/IconButton";
 
 const AuthForm = () => {
   const [inputValues, setInputValues] = useState({
-    email: "rakib10@test.com",
+    email: "reaznahid14@finder-lbs.com",
     password: "12345678",
   });
 
@@ -163,7 +163,7 @@ const AuthForm = () => {
           const profileData = await fetchProfileData(loginData);
 
           if (profileData) {
-            getProfileData(profileData);
+            await getProfileData(profileData);
           }
 
           await checkLoginStatus();

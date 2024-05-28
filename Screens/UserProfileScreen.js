@@ -1,6 +1,13 @@
-import React, { useContext, useEffect, useState } from "react";
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetView,
+} from "@gorhom/bottom-sheet";
+import * as ImagePicker from "expo-image-picker";
+import { PermissionStatus } from "expo-image-picker";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Image,
   ImageBackground,
   Pressable,
@@ -9,21 +16,45 @@ import {
   Text,
   View,
 } from "react-native";
+import Toast from "react-native-toast-message";
+import ConfirmationAlert from "../components/UI/ConfirmationAlert";
 import IconButton from "../components/UI/IconButton";
 import { AuthContext } from "../store/auth-context";
-import { fetchProfileData } from "../util/auth";
+import {
+  deleteImageFromAPI,
+  fetchProfileData,
+  uploadImageToApi,
+} from "../util/auth";
 
-const UserProfileScreen = ({ navigation }) => {
+const UserProfileScreen = ({ navigation, drawerScreenBottomSheetHandler }) => {
+  const { user, fullNameData, getProfileData, getUploadedImage } =
+    useContext(AuthContext);
+
   const [userProfile, setUserProfile] = useState(null);
+  const [pickedImage, setPickedImage] = useState(null);
+  // Alert state
+  const [showAlert, setShowAlert] = useState(false);
+  // Bottomsheet
+  const bottomSheetRef = useRef(null);
+  const [snapPoints, setSnapPoints] = useState(["35%"]);
+  const [bottomSheetIndex, setBottomSheetIndex] = useState(-1);
+  const [isOpen, setIsOpen] = useState(false);
+  // Bottom sheet open or not
 
   const [loading, setIsLoading] = useState(true);
-  const { user, fullNameData } = useContext(AuthContext);
+  const [cameraPermissionInformation, requestPermission] =
+    ImagePicker.useMediaLibraryPermissions();
+  const [GalleryPermissionInformation, galleryRequestPermission] =
+    ImagePicker.useMediaLibraryPermissions();
 
   useEffect(() => {
     const fetchProfile = async () => {
       if (user && user.access_token) {
         const data = await fetchProfileData(user);
 
+        if (data) {
+          await getProfileData(data);
+        }
         setUserProfile(data);
         setIsLoading(false);
       }
@@ -43,6 +74,38 @@ const UserProfileScreen = ({ navigation }) => {
     }
   }, [fullNameData]);
 
+  // Alert handler
+  const showDeleteAlertHandler = () => {
+    setShowAlert(true);
+  };
+
+  const closeDeleteAlertHandler = () => {
+    setShowAlert(false);
+  };
+
+  const openBottomSheet = () => {
+    setBottomSheetIndex(0);
+    bottomSheetRef.current?.expand();
+    setIsOpen(true);
+    drawerScreenBottomSheetHandler(true);
+  };
+
+  const closeBottomSheet = () => {
+    setBottomSheetIndex(-1);
+    bottomSheetRef.current?.close();
+    setIsOpen(false);
+    drawerScreenBottomSheetHandler(false);
+  };
+
+  // Toast handler function
+  const showToast = (error) => {
+    Toast.show({
+      type: "error",
+      text1: error,
+      position: "bottom",
+    });
+  };
+
   if (loading) {
     return (
       <View
@@ -58,6 +121,134 @@ const UserProfileScreen = ({ navigation }) => {
     );
   }
 
+  // Taking permission to take image from gallery...
+
+  async function verifyPermissions() {
+    if (GalleryPermissionInformation.status === PermissionStatus.UNDETERMINED) {
+      const permissionResponse = await galleryRequestPermission();
+
+      return permissionResponse.granted;
+    }
+
+    if (GalleryPermissionInformation.status === PermissionStatus.DENIED) {
+      Alert.alert(
+        "Insufficient Permissions!",
+        "You need to grant gallery permissions to use this app"
+      );
+
+      // await requestPermission();
+
+      return false;
+    }
+
+    return true;
+  }
+
+  // Function to take image from gallery
+  const pickFromGallery = async () => {
+    const hasPermission = await verifyPermissions();
+
+    if (!hasPermission) {
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      try {
+        const response = await uploadImageToApi(result.assets[0].uri, user);
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          // Updating context state...
+          getUploadedImage(result.assets[0].uri);
+          setPickedImage(result.assets[0].uri);
+        } else {
+          showToast("An error occurred!");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  // Taking permission for camera...
+  async function verifyCameraPermissions() {
+    if (cameraPermissionInformation.status === PermissionStatus.UNDETERMINED) {
+      const permissionResponse = await requestPermission();
+
+      return permissionResponse.granted;
+    }
+
+    if (cameraPermissionInformation.status === PermissionStatus.DENIED) {
+      Alert.alert(
+        "Insufficient Permissions!",
+        "You need to grant gallery permissions to use this app"
+      );
+
+      // await requestPermission();
+
+      return false;
+    }
+
+    return true;
+  }
+
+  // Taking photo from camera
+  const pickFromCamera = async () => {
+    const hasPermission = await verifyCameraPermissions();
+
+    if (!hasPermission) {
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      try {
+        const response = await uploadImageToApi(result.assets[0].uri, user);
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          // Updating context state...
+          getUploadedImage(result.assets[0].uri);
+          setPickedImage(result.assets[0].uri);
+        } else {
+          showToast("An error occurred!");
+        }
+      } catch (error) {
+        showToast(error.message);
+      }
+    }
+  };
+
+  // Delete photo handler....
+  const deleteUploadedPhotoHandler = async () => {
+    try {
+      const response = await deleteImageFromAPI("", user);
+      const data = await response.json();
+      console.log(data);
+      // Updating context state...
+      getUploadedImage(null);
+      setPickedImage(null);
+    } catch (error) {
+      showToast(error.message);
+    }
+
+    closeDeleteAlertHandler();
+  };
+
+  // Logic to change profile image...
   let profileImg = (
     <Image
       style={styles.profileImg}
@@ -277,20 +468,26 @@ const UserProfileScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container]}>
       <StatusBar barStyle="dark-content" />
       <View style={styles.profileImgContainer}>
         <View style={styles.profileIconContainer}>
-          <Image
-            style={styles.profileIcon}
-            source={require("../assets/UserProfileScreenImages/Group 626007.png")}
-          />
+          <Pressable onPress={openBottomSheet}>
+            <Image
+              style={styles.profileIcon}
+              source={require("../assets/UserProfileScreenImages/Group 626007.png")}
+            />
+          </Pressable>
         </View>
         <ImageBackground
           style={styles.bgImg}
           source={require("../assets/UserProfileScreenImages/pattern-image.png")}
         >
-          {profileImg}
+          {pickedImage ? (
+            <Image style={styles.profileImg} source={{ uri: pickedImage }} />
+          ) : (
+            profileImg
+          )}
         </ImageBackground>
       </View>
       {/* ************** */}
@@ -343,6 +540,71 @@ const UserProfileScreen = ({ navigation }) => {
             </View>
           </View>
         </Pressable>
+        <View>
+          <Toast />
+        </View>
+      </View>
+      <BottomSheet
+        detached={false}
+        index={bottomSheetIndex}
+        snapPoints={snapPoints}
+        ref={bottomSheetRef}
+        enablePanDownToClose={true}
+        backdropComponent={(props) => (
+          <BottomSheetBackdrop
+            {...props}
+            appearsOnIndex={0}
+            disappearsOnIndex={-1}
+          />
+        )}
+        handleIndicatorStyle={{ backgroundColor: "#ccc" }}
+        keyboardBehavior="interactive"
+        onClose={closeBottomSheet}
+      >
+        <BottomSheetView style={{ flex: 1 }}>
+          <View style={styles.bottomSheetContainer}>
+            <Pressable
+              onPress={pickFromCamera}
+              style={styles.bottomSheetRowContainer}
+            >
+              <Image
+                style={styles.bottomSheetIcon}
+                source={require("../assets/UserProfileScreenImages/camera.png")}
+              />
+              <Text style={styles.bottomSheetText}>Take a Photo</Text>
+            </Pressable>
+            <Pressable
+              onPress={pickFromGallery}
+              style={styles.bottomSheetRowContainer}
+            >
+              <Image
+                style={styles.bottomSheetIcon}
+                source={require("../assets/UserProfileScreenImages/image.png")}
+              />
+              <Text style={styles.bottomSheetText}>Upload from Gallery</Text>
+            </Pressable>
+            <Pressable
+              onPress={showDeleteAlertHandler}
+              style={styles.bottomSheetRowContainer}
+            >
+              <Image
+                style={styles.bottomSheetIcon}
+                source={require("../assets/UserProfileScreenImages/trash.png")}
+              />
+              <Text style={styles.bottomSheetText}>Remove Photo</Text>
+            </Pressable>
+          </View>
+        </BottomSheetView>
+      </BottomSheet>
+      <View>
+        <ConfirmationAlert
+          title="Are you sure?"
+          message=""
+          showAlert={showAlert}
+          enterLinkHandler={deleteUploadedPhotoHandler}
+          hideAlertFunc={closeDeleteAlertHandler}
+          onCloseAlert={closeDeleteAlertHandler}
+        />
       </View>
     </View>
   );
@@ -354,6 +616,30 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FAFAFA",
+  },
+
+  bottomSheetIcon: {
+    width: 26,
+    height: 26,
+  },
+
+  bottomSheetContainer: {
+    paddingLeft: 18,
+    flex: 1,
+    justifyContent: "center",
+  },
+
+  bottomSheetRowContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginVertical: 6,
+  },
+
+  bottomSheetText: {
+    fontFamily: "roboto-regular",
+    fontSize: 15,
+    color: "#151312",
   },
 
   profileImgContainer: {
@@ -413,7 +699,7 @@ const styles = StyleSheet.create({
   profileImg: {
     width: 120,
     height: 120,
-    borderRadius: 100,
+    borderRadius: 120 / 2,
   },
   bgImg: {
     width: 280,

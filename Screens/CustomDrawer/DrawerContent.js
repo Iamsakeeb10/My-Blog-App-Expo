@@ -16,7 +16,7 @@ import { AuthContext } from "../../store/auth-context";
 const DrawerContent = (props) => {
   const navigation = useNavigation();
 
-  const { profileData, user } = useContext(AuthContext);
+  const { profileData, user, uploadedImage } = useContext(AuthContext);
 
   const nonVerifiedText = (
     <Text style={{ color: "#fff", fontSize: 11, fontFamily: "roboto-regular" }}>
@@ -61,16 +61,23 @@ const DrawerContent = (props) => {
                 />
               </View>
 
-              <Image
-                style={[styles.img, { borderRadius: 100 }]}
-                source={
-                  profileData && profileData.profile_picture !== null
-                    ? {
-                        uri: `http://dev23.finder.com.bd/api/v1/${profileData.profile_picture}`,
-                      }
-                    : require("../../assets/UserProfileScreenImages/profile picture.png")
-                }
-              />
+              {uploadedImage ? (
+                <Image
+                  style={[styles.img, { borderRadius: 100 }]}
+                  source={{ uri: uploadedImage }}
+                />
+              ) : (
+                <Image
+                  style={[styles.img, { borderRadius: 100 }]}
+                  source={
+                    profileData && profileData.profile_picture !== null
+                      ? {
+                          uri: `http://dev23.finder.com.bd/api/v1/${profileData.profile_picture}`,
+                        }
+                      : require("../../assets/UserProfileScreenImages/profile picture.png")
+                  }
+                />
+              )}
               <View>
                 <Text style={styles.userName}>
                   {profileData?.name || user?.userName}
