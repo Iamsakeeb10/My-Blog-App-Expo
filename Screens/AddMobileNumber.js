@@ -16,8 +16,9 @@ import { AuthContext } from "../store/auth-context";
 import { addMobileNumber } from "../util/auth";
 
 const AddMobileNumber = ({ navigation, route }) => {
-  const { profileData = {} } = route.params || {};
-  const { user } = useContext(AuthContext);
+  const { isFromEditProfileScreen } = route.params || {};
+
+  const { user, profileData } = useContext(AuthContext);
   const initialNumber = profileData.mobile ? `${profileData.mobile}` : "+880";
 
   const [isFocus, setIsFocus] = useState(false);
@@ -42,6 +43,7 @@ const AddMobileNumber = ({ navigation, route }) => {
     Toast.show({
       type: "error",
       text1: error,
+      visibilityTime: 1500,
       position: "bottom",
     });
   };
@@ -113,7 +115,11 @@ const AddMobileNumber = ({ navigation, route }) => {
   useLayoutEffect(() => {
     const setMobileStorageAndNavigate = async () => {
       await AsyncStorage.setItem("shouldAddMobile", "false");
-      navigation.replace("Drawer");
+      if (isFromEditProfileScreen) {
+        navigation.goBack();
+      } else {
+        navigation.replace("Drawer");
+      }
     };
 
     navigation.setOptions({
@@ -190,7 +196,11 @@ const AddMobileNumber = ({ navigation, route }) => {
             navigation.navigate("Drawer");
           }}
         >
-          <Text style={styles.footerText}>Skip for now</Text>
+          <Text style={styles.footerText}>
+            {isFromEditProfileScreen && isFromEditProfileScreen
+              ? ""
+              : "Skip for now"}
+          </Text>
         </TouchableOpacity>
       </View>
       <View>

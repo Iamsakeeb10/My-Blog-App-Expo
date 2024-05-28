@@ -9,7 +9,12 @@ import {
 import Toast from "react-native-toast-message";
 import Alert from "../components/UI/Alert";
 import { AuthContext } from "../store/auth-context";
-import { creatingUser, verifyEmail, verifyMobileNumber } from "../util/auth";
+import {
+  creatingUser,
+  fetchProfileData,
+  verifyEmail,
+  verifyMobileNumber,
+} from "../util/auth";
 import AuthButton from "./../components/UI/AuthButton";
 
 const CELL_COUNT = 6;
@@ -20,7 +25,8 @@ const VerificationScreen = ({ route, navigation }) => {
   const [showAlert, setShowAlert] = useState(false);
   const [showMobileAlert, setShowMobileAlert] = useState(false);
 
-  const { updatedEmail, user } = useContext(AuthContext);
+  const { updatedEmail, user, getProfileData } = useContext(AuthContext);
+
   // Necessary for sending api req....
   const {
     userId = {},
@@ -38,12 +44,25 @@ const VerificationScreen = ({ route, navigation }) => {
   });
 
   // Alert
-  const showAlertHandler = () => {
+  const showAlertHandler = async () => {
     setShowAlert(true);
+
+    if (user) {
+      const profileData = await fetchProfileData(user);
+      if (profileData) {
+        await getProfileData(profileData);
+      }
+    }
   };
 
-  const showMobileAlertHandler = () => {
+  const showMobileAlertHandler = async () => {
     setShowMobileAlert(true);
+    if (user) {
+      const profileData = await fetchProfileData(user);
+      if (profileData) {
+        await getProfileData(profileData);
+      }
+    }
   };
   const closeAlertHandler = () => {
     navigation.replace("EditProfileScreen");
@@ -58,6 +77,7 @@ const VerificationScreen = ({ route, navigation }) => {
       type: "error",
       text1: error,
       position: "bottom",
+      visibilityTime: 1500,
     });
   };
 

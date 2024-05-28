@@ -48,7 +48,6 @@ const DrawerNavigator = () => {
 
   const [drawerScreenBottomSheetOpen, setDrawerScreenBottomSheetOpen] =
     useState(false);
-  console.log(drawerScreenBottomSheetOpen);
 
   const drawerScreenBottomSheetHandler = (open) => {
     setDrawerScreenBottomSheetOpen(open);

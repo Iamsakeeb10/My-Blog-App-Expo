@@ -16,7 +16,8 @@ import { AuthContext } from "../../store/auth-context";
 const DrawerContent = (props) => {
   const navigation = useNavigation();
 
-  const { profileData, user, uploadedImage } = useContext(AuthContext);
+  const { profileData, user, uploadedImage, fullNameData } =
+    useContext(AuthContext);
 
   const nonVerifiedText = (
     <Text style={{ color: "#fff", fontSize: 11, fontFamily: "roboto-regular" }}>
@@ -80,7 +81,7 @@ const DrawerContent = (props) => {
               )}
               <View>
                 <Text style={styles.userName}>
-                  {profileData?.name || user?.userName}
+                  {fullNameData ? fullNameData : profileData.name}
                 </Text>
                 <View style={styles.verificationContainer}>
                   <Text

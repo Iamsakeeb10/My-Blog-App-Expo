@@ -27,7 +27,7 @@ import {
 } from "../util/auth";
 
 const UserProfileScreen = ({ navigation, drawerScreenBottomSheetHandler }) => {
-  const { user, fullNameData, getProfileData, getUploadedImage } =
+  const { user, fullNameData, getProfileData, getUploadedImage, profileData } =
     useContext(AuthContext);
 
   const [userProfile, setUserProfile] = useState(null);
@@ -76,7 +76,11 @@ const UserProfileScreen = ({ navigation, drawerScreenBottomSheetHandler }) => {
 
   // Alert handler
   const showDeleteAlertHandler = () => {
-    setShowAlert(true);
+    if (pickedImage) {
+      setShowAlert(true);
+    } else {
+      return;
+    }
   };
 
   const closeDeleteAlertHandler = () => {
@@ -103,6 +107,7 @@ const UserProfileScreen = ({ navigation, drawerScreenBottomSheetHandler }) => {
       type: "error",
       text1: error,
       position: "bottom",
+      visibilityTime: 1500,
     });
   };
 
@@ -164,7 +169,6 @@ const UserProfileScreen = ({ navigation, drawerScreenBottomSheetHandler }) => {
         const response = await uploadImageToApi(result.assets[0].uri, user);
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
           // Updating context state...
           getUploadedImage(result.assets[0].uri);
           setPickedImage(result.assets[0].uri);
@@ -219,7 +223,6 @@ const UserProfileScreen = ({ navigation, drawerScreenBottomSheetHandler }) => {
         const response = await uploadImageToApi(result.assets[0].uri, user);
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
           // Updating context state...
           getUploadedImage(result.assets[0].uri);
           setPickedImage(result.assets[0].uri);
@@ -238,9 +241,14 @@ const UserProfileScreen = ({ navigation, drawerScreenBottomSheetHandler }) => {
       const response = await deleteImageFromAPI("", user);
       const data = await response.json();
       console.log(data);
-      // Updating context state...
-      getUploadedImage(null);
-      setPickedImage(null);
+
+      if (response.ok) {
+        // Updating context state...
+        getUploadedImage(null);
+        setPickedImage(null);
+      } else {
+        showToast("An error occurred!");
+      }
     } catch (error) {
       showToast(error.message);
     }

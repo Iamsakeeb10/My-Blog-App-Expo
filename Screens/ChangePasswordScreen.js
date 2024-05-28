@@ -101,6 +101,7 @@ const ChangePasswordScreen = ({ navigation }) => {
       type: "error",
       text1: error,
       position: "bottom",
+      visibilityTime: 1500,
     });
   };
 
@@ -336,7 +337,19 @@ const ChangePasswordScreen = ({ navigation }) => {
             <Text style={styles.errorText}>{isPasswordMatched}</Text>
           )}
         </View>
-        <View style={styles.btnContainerOuter}>
+        <View
+          style={[
+            styles.btnContainerOuter,
+            {
+              flex:
+                isFocus.currentPass ||
+                isFocus.newPassword ||
+                isFocus.confirmNewPass
+                  ? 0
+                  : 2,
+            },
+          ]}
+        >
           <View style={styles.bottomBorder} />
           <Pressable
             onPress={saveChangesHandler}
@@ -425,7 +438,7 @@ const styles = StyleSheet.create({
   },
 
   btnContainerOuter: {
-    flex: 2,
+    // flex: 2,
     justifyContent: "flex-end",
     marginVertical: 16,
   },

@@ -64,6 +64,7 @@ const ThirdScreen = ({ navigation }) => {
       type: "error",
       text1: error,
       position: "bottom",
+      visibilityTime: 1500,
     });
   };
 

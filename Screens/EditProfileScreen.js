@@ -20,21 +20,21 @@ import { bottomSheetChangePassword, changeFullName } from "../util/auth";
 const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
   const navigation = useNavigation();
   const bottomSheetRef = useRef(null);
-  const route = useRoute();
-  const { userProfile = {} } = route.params || {};
-  const { user, fullNameDataFunc, profileData } = useContext(AuthContext);
-
   const [snapPoints, setSnapPoints] = useState(["50%", "70%"]);
   const [bottomSheetIndex, setBottomSheetIndex] = useState(-1);
+  // Bottom sheet open or not
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const route = useRoute();
+  const { userProfile = {} } = route.params || {};
+  const { user, fullNameDataFunc, profileData, fullNameData } =
+    useContext(AuthContext);
+
   // Input values state including full name, email and mobile number...
   const [inputValues, setInputValues] = useState({
     userFullName: userProfile && userProfile.name,
   });
 
   const [showPassword, setShowPassword] = useState("");
-
-  // Bottom sheet open or not
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 
   // Bottom sheet email input state...
   const [bottomSheetPasswordInput, setBottomSheetPasswordInput] =
@@ -77,6 +77,7 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
       type: "error",
       text1: error,
       position: "bottom",
+      visibilityTime: 1500,
     });
   };
 
@@ -94,16 +95,15 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
     setIsBottomSheetOpen(false);
   };
 
+  const handleBottomSheetClose = () => {
+    isBottomSheetOpenYet(false);
+  };
   const handleFocus = () => {
     setSnapPoints(["100%"]);
   };
 
   const handleBlur = () => {
     setSnapPoints(["50%"]);
-  };
-
-  const handleBottomSheetClose = () => {
-    isBottomSheetOpenYet(false);
   };
 
   // Closing bottomsheet when navigating away...
@@ -316,19 +316,27 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
         <View style={[styles.inputContainer, styles.specificStyles]}>
           <View style={styles.verifyRowContainer}>
             <Text style={styles.label}>Phone Number</Text>
-            <Text
-              style={{
-                fontSize: 13,
-                fontFamily: "roboto-semi",
-                color: "#00AE11",
-              }}
+            <Pressable
+              onPress={() =>
+                navigation.navigate("AddMobileNumberScreen", {
+                  isFromEditProfileScreen: true,
+                })
+              }
             >
-              {userProfile &&
-              userProfile.mobile &&
-              !userProfile.is_mobile_verified
-                ? "Verify"
-                : ""}
-            </Text>
+              <Text
+                style={{
+                  fontSize: 13,
+                  fontFamily: "roboto-semi",
+                  color: "#00AE11",
+                }}
+              >
+                {userProfile &&
+                userProfile.mobile &&
+                !userProfile.is_mobile_verified
+                  ? "Verify"
+                  : ""}
+              </Text>
+            </Pressable>
           </View>
           <View style={styles.passwordContainer}>
             <TextInput
@@ -350,12 +358,25 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
               onFocus={() => inputFocusHandler("mobile")}
               onBlur={() => inputBlurHandler("mobile")}
             />
-            <Text style={styles.rowEndText}>
-              {userProfile && userProfile.mobile ? "Change" : "Add Number"}
-            </Text>
+            <Pressable
+              onPress={() =>
+                navigation.navigate("AddMobileNumberScreen", {
+                  isFromEditProfileScreen: true,
+                })
+              }
+            >
+              <Text style={styles.rowEndText}>
+                {userProfile && userProfile.mobile ? "Change" : "Add Number"}
+              </Text>
+            </Pressable>
           </View>
         </View>
-        <View style={styles.btnContainerOuter}>
+        <View
+          style={[
+            styles.btnContainerOuter,
+            { flex: isFocus.name || isFocus.email || isFocus.mobile ? 0 : 2 },
+          ]}
+        >
           <View style={styles.bottomBorder} />
           <Pressable
             onPress={editProfileDataHandler}
@@ -607,7 +628,7 @@ const styles = StyleSheet.create({
   },
 
   btnContainerOuter: {
-    flex: 2,
+    // flex: 2,
     justifyContent: "flex-end",
     marginVertical: 16,
   },

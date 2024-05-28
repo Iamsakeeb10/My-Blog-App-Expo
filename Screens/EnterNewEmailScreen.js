@@ -7,7 +7,7 @@ import { changeUserEmail } from "../util/auth";
 
 const EnterNewEmailScreen = ({ navigation, route }) => {
   const [isFocus, setIsFocus] = useState(false);
-  const [enteredEmail, setEnteredEmail] = useState("test@test.com");
+  const [enteredEmail, setEnteredEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const { user, getUpdatedEmail } = useContext(AuthContext);
   const { userId = {} } = route.params || {};
@@ -26,6 +26,7 @@ const EnterNewEmailScreen = ({ navigation, route }) => {
       type: "error",
       text1: error,
       position: "bottom",
+      visibilityTime: 1500,
     });
   };
 

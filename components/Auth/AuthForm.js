@@ -18,8 +18,8 @@ import IconButton from "../UI/IconButton";
 
 const AuthForm = () => {
   const [inputValues, setInputValues] = useState({
-    email: "reaznahid14@finder-lbs.com",
-    password: "12345678",
+    email: "",
+    password: "",
   });
 
   const [validCredentials, setValidCredentials] = useState(false);
@@ -91,6 +91,7 @@ const AuthForm = () => {
       type: "error",
       text1: error,
       position: "bottom",
+      visibilityTime: 1500,
     });
   };
 
@@ -172,9 +173,7 @@ const AuthForm = () => {
             (profileData && !profileData.mobile) ||
             !profileData.is_mobile_verified
           ) {
-            navigation.replace("AddMobileNumberScreen", {
-              profileData: profileData,
-            }); // Navigating to Add phone number screen...
+            navigation.replace("AddMobileNumberScreen"); // Navigating to Add phone number screen...
           } else {
             navigation.replace("Drawer"); // Navigating to My Blogs screen...
           }
