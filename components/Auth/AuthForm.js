@@ -18,8 +18,8 @@ import IconButton from "../UI/IconButton";
 
 const AuthForm = () => {
   const [inputValues, setInputValues] = useState({
-    email: "",
-    password: "",
+    email: "shakib18@test.com",
+    password: "123456",
   });
 
   const [validCredentials, setValidCredentials] = useState(false);
@@ -147,6 +147,7 @@ const AuthForm = () => {
     try {
       setLoading(true);
       const loginData = await loginUser(email, password);
+      console.log(loginData);
 
       if (loginData) {
         if (loginData.access_token) {
@@ -183,7 +184,7 @@ const AuthForm = () => {
         }
       } else {
         // Handle null loginData
-        showToast("Login failed. Please try again.");
+        showToast(loginData.message);
       }
     } catch (error) {
       showToast(error.message);
@@ -248,7 +249,9 @@ const AuthForm = () => {
               style={[
                 styles.input,
                 styles.passwordInput,
-                { borderColor: isFocus.password ? "#A0130F" : "#DBDBDB" },
+                {
+                  borderColor: isFocus.password ? "#A0130F" : "#DBDBDB",
+                },
               ]}
               autoCapitalize="none"
               secureTextEntry={!showPass}
@@ -259,7 +262,11 @@ const AuthForm = () => {
               onFocus={() => inputFocusHandler("password")}
               onBlur={() => inputBlurHandler("password")}
             />
-            <Pressable onPress={() => setShowPass(!showPass)}>
+            <Pressable
+              style={{ backgroundColor: "coral" }}
+              hitSlop={{ top: 20, bottom: 20, left: 50, right: 20 }}
+              onPress={() => setShowPass(!showPass)}
+            >
               <Image
                 source={
                   !showPass

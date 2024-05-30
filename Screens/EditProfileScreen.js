@@ -37,8 +37,7 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
   const [showPassword, setShowPassword] = useState("");
 
   // Bottom sheet email input state...
-  const [bottomSheetPasswordInput, setBottomSheetPasswordInput] =
-    useState("12345678");
+  const [bottomSheetPasswordInput, setBottomSheetPasswordInput] = useState("");
 
   // Bottom sheet email input error state...
   const [bottomSheetPasswordInputError, setBottomSheetPasswordInputError] =
@@ -362,6 +361,7 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
               onPress={() =>
                 navigation.navigate("AddMobileNumberScreen", {
                   isFromEditProfileScreen: true,
+                  isChangeNumber: userProfile && userProfile.mobile,
                 })
               }
             >
@@ -504,6 +504,7 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
                   />
                   <Pressable
                     onPress={() => iconVisibilityHandler("showNewPass")}
+                    hitSlop={{ top: 20, bottom: 20, left: 50, right: 20 }}
                   >
                     <Image
                       source={

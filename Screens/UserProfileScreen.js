@@ -167,13 +167,15 @@ const UserProfileScreen = ({ navigation, drawerScreenBottomSheetHandler }) => {
     if (!result.canceled) {
       try {
         const response = await uploadImageToApi(result.assets[0].uri, user);
+        const data = await response.text();
+        console.log(data);
+
         if (response.ok) {
-          const data = await response.json();
           // Updating context state...
           getUploadedImage(result.assets[0].uri);
           setPickedImage(result.assets[0].uri);
         } else {
-          showToast("An error occurred!");
+          showToast(data.message || "An error occurred");
         }
       } catch (error) {
         console.log(error);

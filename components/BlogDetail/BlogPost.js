@@ -15,12 +15,13 @@ const BlogPost = ({ item }) => {
   const shortDesc = item.body.split("");
 
   return (
-    <View style={commonStyles.container}>
+    <View style={[commonStyles.container, { zIndex: 5 }]}>
       <Pressable
         onPress={onPress}
         style={({ pressed }) => [
           commonStyles.blogItem,
           pressed && commonStyles.pressed,
+          { zIndex: 5 },
         ]}
       >
         <Text style={commonStyles.title}>{item.title}</Text>

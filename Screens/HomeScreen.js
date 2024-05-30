@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import BlogPost from "../components/BlogDetail/BlogPost";
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = () => {
   const [posts, setPosts] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +54,13 @@ const HomeScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View
+      style={{
+        flex: 1,
+        zIndex: 1,
+        backgroundColor: "#B6C4B6",
+      }}
+    >
       <StatusBar barStyle="light-content" />
       <FlatList
         data={posts}

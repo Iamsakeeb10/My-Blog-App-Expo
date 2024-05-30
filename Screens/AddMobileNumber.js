@@ -154,7 +154,7 @@ const AddMobileNumber = ({ navigation, route }) => {
         <Text style={styles.headerText}>
           {profileData && !profileData.mobile
             ? "Add a phone number"
-            : "Verify phone number"}
+            : "Verify or Change phone number"}
         </Text>
       </View>
       <View style={{ marginVertical: 7 }}>

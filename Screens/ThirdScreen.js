@@ -1,5 +1,5 @@
 // import { MaterialCommunityIcons } from "@expo/vector-icons";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Image,
   Pressable,
@@ -11,10 +11,12 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
-import IconButton from "../components/UI/IconButton";
+import { AuthContext } from "../store/auth-context";
 import { emailVerificationForCreatingUser } from "../util/auth";
 
 const ThirdScreen = ({ navigation }) => {
+  const { getUpdatedEmail } = useContext(AuthContext);
+
   // Initializing state...****
   const [showPassword, setShowPassword] = useState({
     password: false,
@@ -173,6 +175,7 @@ const ThirdScreen = ({ navigation }) => {
         console.log(data);
 
         showToast(data.message);
+        getUpdatedEmail(trimmedEmail);
         navigation.navigate("VerificationScreen", {
           fullName: trimmedName,
           email: trimmedEmail,
@@ -185,200 +188,205 @@ const ThirdScreen = ({ navigation }) => {
     }
   };
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <StatusBar barStyle="dark-content" />
-
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      <View>
         {/* Go Back Icon Container */}
-        <View>
-          <IconButton
-            onPress={() => navigation.navigate("Login")}
-            icon="arrow-back-outline"
-            size={29}
-            color="#303030"
-          />
-        </View>
-        <View style={styles.innerContainer}>
-          {/* Header Container */}
-          <View style={styles.headerContainer}>
-            <Text style={styles.headerText}>Create your account</Text>
-          </View>
-          {/* Email Input Container */}
-          <View style={[styles.inputContainer, styles.specificStyles]}>
-            <Text style={styles.label}>Full Name</Text>
-            <TextInput
-              onChangeText={(enteredValue) =>
-                inputChangeHandler("fullName", enteredValue)
-              }
-              style={styles.input}
-              placeholder="Enter name"
-              placeholderTextColor="#BFBFBF"
-              value={inputValues.fullName}
-            />
-          </View>
-          {nameError ? <Text style={styles.errorText}>{nameError}</Text> : ""}
-          <View style={[styles.inputContainer, styles.specificStyles]}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              onChangeText={(enteredValue) =>
-                inputChangeHandler("email", enteredValue)
-              }
-              style={styles.input}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              placeholder="Enter email"
-              placeholderTextColor="#BFBFBF"
-              value={inputValues.email}
-            />
-          </View>
-          {emailError ? <Text style={styles.errorText}>{emailError}</Text> : ""}
-          {/* Password Input Container */}
-          <View style={[styles.inputContainer, styles.specificStyles]}>
-            <Text style={styles.label}>Password</Text>
-            <View style={[styles.passwordContainer, { flexDirection: "row" }]}>
-              <TextInput
-                onChangeText={(enteredValue) =>
-                  inputChangeHandler("password", enteredValue)
-                }
-                style={[styles.input, { flex: 1 }]}
-                autoCapitalize="none"
-                secureTextEntry={!showPassword.password}
-                placeholder="Enter password"
-                placeholderTextColor="#BFBFBF"
-                value={inputValues.password}
-              />
-              <Pressable onPress={() => iconVisibilityHandler("password")}>
-                <Image
-                  source={
-                    !showPassword.password
-                      ? require("../assets/images/hidden.png")
-                      : require("../assets/images/visibility.png")
-                  }
-                  style={styles.eyeImg}
-                />
-              </Pressable>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={styles.innerContainer}>
+            {/* Header Container */}
+            <View style={styles.headerContainer}>
+              <Text style={styles.headerText}>Create your account</Text>
             </View>
-          </View>
-          {userPasswordError ? (
-            <Text style={styles.errorText}>{userPasswordError}</Text>
-          ) : (
-            ""
-          )}
-          <View style={[styles.inputContainer, styles.specificStyles]}>
-            <Text style={styles.label}>Retype Password</Text>
-            <View style={[styles.passwordContainer, { flexDirection: "row" }]}>
+            {/* Email Input Container */}
+            <View style={[styles.inputContainer, styles.specificStyles]}>
+              <Text style={styles.label}>Full Name</Text>
               <TextInput
                 onChangeText={(enteredValue) =>
-                  inputChangeHandler("reTypePassword", enteredValue)
+                  inputChangeHandler("fullName", enteredValue)
                 }
-                style={[styles.input, { flex: 1 }]}
-                autoCapitalize="none"
-                secureTextEntry={!showPassword.reTypePassword}
-                placeholder="Enter password"
+                style={styles.input}
+                placeholder="Enter name"
                 placeholderTextColor="#BFBFBF"
-                value={inputValues.reTypePassword}
+                value={inputValues.fullName}
               />
-              <Pressable
-                onPress={() => iconVisibilityHandler("reTypePassword")}
+            </View>
+            {nameError ? <Text style={styles.errorText}>{nameError}</Text> : ""}
+            <View style={[styles.inputContainer, styles.specificStyles]}>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                onChangeText={(enteredValue) =>
+                  inputChangeHandler("email", enteredValue)
+                }
+                style={styles.input}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                placeholder="Enter email"
+                placeholderTextColor="#BFBFBF"
+                value={inputValues.email}
+              />
+            </View>
+            {emailError ? (
+              <Text style={styles.errorText}>{emailError}</Text>
+            ) : (
+              ""
+            )}
+            {/* Password Input Container */}
+            <View style={[styles.inputContainer, styles.specificStyles]}>
+              <Text style={styles.label}>Password</Text>
+              <View
+                style={[styles.passwordContainer, { flexDirection: "row" }]}
               >
-                <Image
-                  source={
-                    !showPassword.reTypePassword
-                      ? require("../assets/images/hidden.png")
-                      : require("../assets/images/visibility.png")
+                <TextInput
+                  onChangeText={(enteredValue) =>
+                    inputChangeHandler("password", enteredValue)
                   }
-                  style={styles.eyeImg}
+                  style={[styles.input, { flex: 1 }]}
+                  autoCapitalize="none"
+                  secureTextEntry={!showPassword.password}
+                  placeholder="Enter password"
+                  placeholderTextColor="#BFBFBF"
+                  value={inputValues.password}
                 />
-              </Pressable>
-            </View>
-          </View>
-          {userReTypePasswordError ? (
-            <Text style={styles.errorText}>{userReTypePasswordError}</Text>
-          ) : (
-            <Text style={styles.errorText}>{userPasswordMatched}</Text>
-          )}
-
-          {/* Policy Text */}
-          <View style={styles.policyTextContainer}>
-            <Text style={styles.policyText}>
-              By signing up to create an account I accept Finder's
-            </Text>
-            <View style={styles.policyTextInnerContainer}>
-              <Pressable>
-                <Text style={[styles.policyText, styles.redText]}>
-                  Terms of Services
-                </Text>
-              </Pressable>
-              <Text style={styles.policyText}> and </Text>
-              <Pressable>
-                <Text style={[styles.policyText, styles.redText]}>
-                  Privacy Policy
-                </Text>
-              </Pressable>
-            </View>
-          </View>
-
-          {/* Button */}
-          <View style={styles.btnContainerOuter}>
-            <Pressable
-              onPress={submitInputValuesHandler}
-              style={styles.btnContainerInner}
-            >
-              <Text style={styles.btnText}>CREATE ACCOUNT</Text>
-            </Pressable>
-          </View>
-
-          {/* Alternative of Create Account */}
-          <View style={styles.orContainer}>
-            <View style={styles.dottedBorder} />
-            <Text style={styles.orText}>Or</Text>
-            <View style={styles.dottedBorder} />
-          </View>
-          <View>
-            <Toast />
-          </View>
-          {/* Continue With */}
-          <View style={styles.continueWithParentContainer}>
-            <View style={styles.continueWithOuterContainer}>
-              <View style={styles.continueWithInnerContainer}>
-                <Image
-                  source={require("../assets/images/search.png")}
-                  style={styles.googleImg}
-                />
-                <Text style={styles.continueText}>Continue with Google</Text>
+                <Pressable
+                  hitSlop={{ top: 20, bottom: 20, left: 50, right: 20 }}
+                  onPress={() => iconVisibilityHandler("password")}
+                >
+                  <Image
+                    source={
+                      !showPassword.password
+                        ? require("../assets/images/hidden.png")
+                        : require("../assets/images/visibility.png")
+                    }
+                    style={styles.eyeImg}
+                  />
+                </Pressable>
               </View>
             </View>
-            <View style={styles.continueWithOuterContainer}>
-              <View style={styles.continueWithInnerContainer}>
-                <Image
-                  source={require("../assets/images/apple-logo.png")}
-                  style={styles.appleImg}
+            {userPasswordError ? (
+              <Text style={styles.errorText}>{userPasswordError}</Text>
+            ) : (
+              ""
+            )}
+            <View style={[styles.inputContainer, styles.specificStyles]}>
+              <Text style={styles.label}>Retype Password</Text>
+              <View
+                style={[styles.passwordContainer, { flexDirection: "row" }]}
+              >
+                <TextInput
+                  onChangeText={(enteredValue) =>
+                    inputChangeHandler("reTypePassword", enteredValue)
+                  }
+                  style={[styles.input, { flex: 1 }]}
+                  autoCapitalize="none"
+                  secureTextEntry={!showPassword.reTypePassword}
+                  placeholder="Enter password"
+                  placeholderTextColor="#BFBFBF"
+                  value={inputValues.reTypePassword}
                 />
-                <Text style={styles.continueText}>Continue with Apple</Text>
+                <Pressable
+                  onPress={() => iconVisibilityHandler("reTypePassword")}
+                  hitSlop={{ top: 20, bottom: 20, left: 50, right: 20 }}
+                >
+                  <Image
+                    source={
+                      !showPassword.reTypePassword
+                        ? require("../assets/images/hidden.png")
+                        : require("../assets/images/visibility.png")
+                    }
+                    style={styles.eyeImg}
+                  />
+                </Pressable>
               </View>
             </View>
-          </View>
+            {userReTypePasswordError ? (
+              <Text style={styles.errorText}>{userReTypePasswordError}</Text>
+            ) : (
+              <Text style={styles.errorText}>{userPasswordMatched}</Text>
+            )}
 
-          {/* Footer Text Container */}
-          <View style={styles.createNewContainer}>
-            <View style={styles.createAccountContainer}>
-              <Text style={styles.newToFinderText}>
-                Already have an Account?{" "}
+            {/* Policy Text */}
+            <View style={styles.policyTextContainer}>
+              <Text style={styles.policyText}>
+                By signing up to create an account I accept Finder's
               </Text>
+              <View style={styles.policyTextInnerContainer}>
+                <Pressable>
+                  <Text style={[styles.policyText, styles.redText]}>
+                    Terms of Services
+                  </Text>
+                </Pressable>
+                <Text style={styles.policyText}> and </Text>
+                <Pressable>
+                  <Text style={[styles.policyText, styles.redText]}>
+                    Privacy Policy
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+
+            {/* Button */}
+            <View style={styles.btnContainerOuter}>
               <Pressable
-                onPress={() => navigation.replace("Login")}
-                style={({ pressed }) => [
-                  styles.createAccountText,
-                  pressed && styles.pressed,
-                ]}
+                onPress={submitInputValuesHandler}
+                style={styles.btnContainerInner}
               >
-                <Text style={styles.createNewLink}>Sign In</Text>
+                <Text style={styles.btnText}>CREATE ACCOUNT</Text>
               </Pressable>
             </View>
+
+            {/* Alternative of Create Account */}
+            <View style={styles.orContainer}>
+              <View style={styles.dottedBorder} />
+              <Text style={styles.orText}>Or</Text>
+              <View style={styles.dottedBorder} />
+            </View>
+            <View>
+              <Toast />
+            </View>
+            {/* Continue With */}
+            <View style={styles.continueWithParentContainer}>
+              <View style={styles.continueWithOuterContainer}>
+                <View style={styles.continueWithInnerContainer}>
+                  <Image
+                    source={require("../assets/images/search.png")}
+                    style={styles.googleImg}
+                  />
+                  <Text style={styles.continueText}>Continue with Google</Text>
+                </View>
+              </View>
+              <View style={styles.continueWithOuterContainer}>
+                <View style={styles.continueWithInnerContainer}>
+                  <Image
+                    source={require("../assets/images/apple-logo.png")}
+                    style={styles.appleImg}
+                  />
+                  <Text style={styles.continueText}>Continue with Apple</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Footer Text Container */}
+            <View style={styles.createNewContainer}>
+              <View style={styles.createAccountContainer}>
+                <Text style={styles.newToFinderText}>
+                  Already have an Account?{" "}
+                </Text>
+                <Pressable
+                  onPress={() => navigation.replace("Login")}
+                  style={({ pressed }) => [
+                    styles.createAccountText,
+                    pressed && styles.pressed,
+                  ]}
+                >
+                  <Text style={styles.createNewLink}>Sign In</Text>
+                </Pressable>
+              </View>
+            </View>
           </View>
-        </View>
+        </ScrollView>
       </View>
-    </ScrollView>
+    </View>
   );
 };
 export default ThirdScreen;
@@ -386,7 +394,6 @@ export default ThirdScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 40,
     paddingHorizontal: 20,
   },
 
@@ -399,7 +406,6 @@ const styles = StyleSheet.create({
   },
 
   innerContainer: {
-    marginTop: 10,
     marginHorizontal: 3,
     flex: 1,
   },
@@ -471,7 +477,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-end",
     flex: 1,
-    marginTop: 16,
+    marginVertical: 16,
   },
   newToFinderText: {
     color: "#535357",

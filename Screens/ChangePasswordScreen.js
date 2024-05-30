@@ -236,7 +236,10 @@ const ChangePasswordScreen = ({ navigation }) => {
               onFocus={() => inputFocusHandler("currentPass")}
               onBlur={() => inputBlurHandler("currentPass")}
             />
-            <Pressable onPress={() => iconVisibilityHandler("showCurPass")}>
+            <Pressable
+              hitSlop={{ top: 20, bottom: 20, left: 50, right: 20 }}
+              onPress={() => iconVisibilityHandler("showCurPass")}
+            >
               <Image
                 source={
                   !showPassword.showCurPass
@@ -277,7 +280,10 @@ const ChangePasswordScreen = ({ navigation }) => {
               onFocus={() => inputFocusHandler("newPass")}
               onBlur={() => inputBlurHandler("newPass")}
             />
-            <Pressable onPress={() => iconVisibilityHandler("showNewPass")}>
+            <Pressable
+              hitSlop={{ top: 20, bottom: 20, left: 50, right: 20 }}
+              onPress={() => iconVisibilityHandler("showNewPass")}
+            >
               <Image
                 source={
                   !showPassword.showNewPass
@@ -319,6 +325,7 @@ const ChangePasswordScreen = ({ navigation }) => {
               onBlur={() => inputBlurHandler("confirmNewPass")}
             />
             <Pressable
+              hitSlop={{ top: 20, bottom: 20, left: 50, right: 20 }}
               onPress={() => iconVisibilityHandler("showConfirmNewPass")}
             >
               <Image

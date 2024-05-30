@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { useContext, useEffect } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
@@ -14,12 +13,12 @@ function WelcomeScreen() {
 
       try {
         if (userData && userData.access_token) {
-          const shouldAddMobile = await AsyncStorage.getItem("shouldAddMobile");
-          if (shouldAddMobile === "true") {
-            navigation.replace("AddMobileNumberScreen");
-          } else if (shouldAddMobile === "false") {
-            navigation.replace("Drawer");
-          }
+          // const shouldAddMobile = await AsyncStorage.getItem("shouldAddMobile");
+          // if (shouldAddMobile === "true") {
+          //   navigation.replace("AddMobileNumberScreen");
+          // } else if (shouldAddMobile === "false") {
+          navigation.replace("Drawer");
+          // }
         } else {
           navigation.replace("FirstScreen");
         }
