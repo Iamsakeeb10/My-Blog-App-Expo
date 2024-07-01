@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -27,9 +28,9 @@ const HomeScreen = () => {
   async function getPosts() {
     setIsLoading(true);
     try {
-      const response = await fetch(url);
+      const response = await axios.get(url);
 
-      const data = await response.json();
+      const data = response.data;
 
       setPosts((prevPosts) => [...prevPosts, ...data]);
 

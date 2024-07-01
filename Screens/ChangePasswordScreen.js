@@ -173,8 +173,8 @@ const ChangePasswordScreen = ({ navigation }) => {
     try {
       setLoading(true);
       const response = await changeUserPassword(curPassword, newPass, user);
-      const data = await response.json();
-      if (response.ok) {
+      const data = response.data;
+      if (response.status >= 200 && response.status < 300) {
         showAlertFunc();
         setPasswordInputValues({
           curPassword: "",

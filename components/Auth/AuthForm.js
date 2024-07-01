@@ -147,7 +147,7 @@ const AuthForm = () => {
     try {
       setLoading(true);
       const loginData = await loginUser(email, password);
-      console.log(loginData);
+      // console.log(loginData);
 
       if (loginData) {
         if (loginData.access_token) {
@@ -187,7 +187,7 @@ const AuthForm = () => {
         showToast(loginData.message);
       }
     } catch (error) {
-      showToast(error.message);
+      showToast("Invalid email or password");
     } finally {
       setLoading(false);
     }
@@ -301,9 +301,12 @@ const AuthForm = () => {
           </AuthButton>
         </View>
         {/* Forgot Password Text Container */}
-        <View style={styles.forgotTextContainer}>
+        <Pressable
+          onPress={() => navigation.navigate("ForgotPasswordScreen")}
+          style={styles.forgotTextContainer}
+        >
           <Text style={styles.forgotText}>Forgot Password?</Text>
-        </View>
+        </Pressable>
         {/* Footer Text Container */}
         <View style={styles.createNewContainer}>
           <View style={styles.createAccountContainer}>

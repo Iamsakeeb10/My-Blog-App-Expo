@@ -161,17 +161,17 @@ const ThirdScreen = ({ navigation }) => {
     try {
       const response = await emailVerificationForCreatingUser(trimmedEmail);
 
-      if (!response.ok) {
+      if (!response.status >= 200 && !response.status < 300) {
         if (response.status === 404) {
           showToast("Request not found");
         } else if (response.status === 500) {
           showToast("Server error");
         } else {
-          const data = await response.json();
+          const data = response.data;
           showToast(data.message || "An error occurred");
         }
       } else {
-        const data = await response.json();
+        const data = response.data;
         console.log(data);
 
         showToast(data.message);
@@ -184,7 +184,7 @@ const ThirdScreen = ({ navigation }) => {
         });
       }
     } catch (error) {
-      showToast(error.message);
+      error.message;
     }
   };
   return (

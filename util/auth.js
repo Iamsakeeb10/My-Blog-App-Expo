@@ -1,3 +1,5 @@
+import axios from "axios";
+
 const BASE_URL = "http://dev23.finder.com.bd/api/v1";
 
 const LOGIN_URL = "http://dev23.finder.com.bd/api/v1/users/login";
@@ -11,17 +13,15 @@ export async function loginUser(email, password) {
 
     // console.log("-------requestbody:", requestBody);
 
-    const response = await fetch(LOGIN_URL, {
-      method: "POST",
+    const response = await axios.post(LOGIN_URL, requestBody, {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(requestBody),
     });
 
     // console.log("----response", response);
 
-    const data = await response.json();
+    const data = response.data;
 
     // console.log("----data", data);
 
@@ -62,19 +62,18 @@ const GET_URL = "http://dev23.finder.com.bd/api/v1/users/customers/profile";
 
 export const fetchProfileData = async (user) => {
   try {
-    const response = await fetch(GET_URL, {
-      method: "GET",
+    const response = await axios.get(GET_URL, {
       headers: {
         Authorization: `Bearer ${user.access_token}`,
       },
     });
 
-    const responseData = await response.json();
-    // console.log("profile data----------", responseData);
+    const responseData = response.data;
+    // console.log("profile data:", responseData);
 
     return responseData;
   } catch (error) {
-    console.log(error);
+    console.log("Error fetching profile data:", error);
   }
 };
 
@@ -88,21 +87,18 @@ export const changeUserPassword = async (curPass, newPass, user) => {
   };
 
   try {
-    const response = await fetch(PATCH_URL, {
-      method: "PATCH",
+    const response = await axios.patch(PATCH_URL, requestBody, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${user.access_token}`,
       },
-      body: JSON.stringify(requestBody),
     });
 
     return response;
   } catch (error) {
-    console.log("pasError------", error);
+    console.log("Password change error:", error);
   }
 };
-
 // Change full name api req...
 
 const NAME_CHANGE_URL = BASE_URL + "/users/customers/profile";
@@ -113,23 +109,19 @@ export const changeFullName = async (fullName, user) => {
   };
 
   try {
-    const response = await fetch(NAME_CHANGE_URL, {
-      method: "PATCH",
+    const response = await axios.patch(NAME_CHANGE_URL, payload, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${user.access_token}`,
       },
-      body: JSON.stringify(payload),
     });
 
-    const data = await response.json();
-
+    const data = response.data;
     return data;
   } catch (error) {
-    console.log(error);
+    console.log("Error changing full name:", error);
   }
 };
-
 // Password verification api req...
 
 const CHANGE_EMAIL_URL = BASE_URL + "/users/password-verification";
@@ -141,21 +133,20 @@ export const bottomSheetChangePassword = async (password, user) => {
   };
 
   try {
-    const response = await fetch(CHANGE_EMAIL_URL, {
-      method: "POST",
+    const response = await axios.post(CHANGE_EMAIL_URL, payload, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${user.access_token}`,
       },
-      body: JSON.stringify(payload),
     });
+
+    console.log(response);
 
     return response;
   } catch (error) {
-    console.log(error);
+    console.log("Error changing password:", error);
   }
 };
-
 // Change email api req...
 const CHANGE_USER_EMAIL_URL = BASE_URL + "/users/verification-code";
 
@@ -165,22 +156,18 @@ export const changeUserEmail = async (email, user) => {
   };
 
   try {
-    const response = await fetch(CHANGE_USER_EMAIL_URL, {
-      method: "POST",
+    const response = await axios.post(CHANGE_USER_EMAIL_URL, payload, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${user.access_token}`,
       },
-
-      body: JSON.stringify(payload),
     });
 
     return response;
   } catch (error) {
-    console.log(error);
+    console.log("Error changing user email:", error);
   }
 };
-
 // Api req for changing email through verification code...
 
 const VERIFY_EMAIL_URL =
@@ -194,18 +181,16 @@ export const verifyEmail = async (updatedEmail, enteredCode, userId, user) => {
   };
 
   try {
-    const response = await fetch(VERIFY_EMAIL_URL, {
-      method: "PATCH",
+    const response = await axios.patch(VERIFY_EMAIL_URL, payload, {
       headers: {
-        "Content-type": "application/json",
+        "Content-Type": "application/json",
         Authorization: `Bearer ${user.access_token}`,
       },
-      body: JSON.stringify(payload),
     });
 
     return response;
   } catch (error) {
-    console.log(error);
+    console.log("Error verifying email:", error);
   }
 };
 
@@ -226,19 +211,15 @@ export const emailVerificationForCreatingUser = async (email, user) => {
   }
 
   try {
-    const response = await fetch(EMAIL_URL_FOR_CREATING_USER, {
-      method: "POST",
+    const response = await axios.post(EMAIL_URL_FOR_CREATING_USER, payload, {
       headers: headers,
-
-      body: JSON.stringify(payload),
     });
 
     return response;
   } catch (error) {
-    console.log(error);
+    console.log("Error verifying email for creating user:", error);
   }
 };
-
 // Creating user....
 const CREATING_USER_URL = BASE_URL + "/users/customers/registration";
 
@@ -251,24 +232,21 @@ export const creatingUser = async (name, email, code, password) => {
   };
 
   const headers = {
-    "Content-type": "application/json",
+    "Content-Type": "application/json",
   };
 
   try {
-    const response = await fetch(CREATING_USER_URL, {
-      method: "POST",
+    const response = await axios.post(CREATING_USER_URL, payload, {
       headers: headers,
-      body: JSON.stringify(payload),
     });
 
     return response;
   } catch (error) {
-    console.log(error);
+    console.log("Error creating user:", error);
   }
 };
-
 // Api req to add mobile number...
-export const ADD_MOBILE_NUMBER_URL = BASE_URL + "/users/verification-code";
+const ADD_MOBILE_NUMBER_URL = BASE_URL + "/users/verification-code";
 
 export const addMobileNumber = async (mobileNumber, user) => {
   const payload = {
@@ -276,22 +254,18 @@ export const addMobileNumber = async (mobileNumber, user) => {
   };
 
   try {
-    const response = await fetch(CHANGE_USER_EMAIL_URL, {
-      method: "POST",
+    const response = await axios.post(ADD_MOBILE_NUMBER_URL, payload, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${user.access_token}`,
       },
-
-      body: JSON.stringify(payload),
     });
 
     return response;
   } catch (error) {
-    console.log(error);
+    console.log("Error adding mobile number:", error);
   }
 };
-
 // Adding mobile number through verification code...
 
 const ADD_MOBILE_NUMBER_OTP_URL =
@@ -304,21 +278,18 @@ export const verifyMobileNumber = async (phoneNumber, enteredCode, user) => {
   };
 
   try {
-    const response = await fetch(ADD_MOBILE_NUMBER_OTP_URL, {
-      method: "PATCH",
+    const response = await axios.patch(ADD_MOBILE_NUMBER_OTP_URL, payload, {
       headers: {
-        "Content-type": "application/json",
+        "Content-Type": "application/json",
         Authorization: `Bearer ${user.access_token}`,
       },
-      body: JSON.stringify(payload),
     });
 
     return response;
   } catch (error) {
-    console.log(error);
+    console.log("Error verifying mobile number:", error);
   }
 };
-
 // Uploading image to api..
 const IMAGE_UPLOADING_URL = BASE_URL + "/users/customers/profile";
 
@@ -331,21 +302,18 @@ export const uploadImageToApi = async (pickedImage, user) => {
       type: "image/jpg",
     });
 
-    const response = await fetch(IMAGE_UPLOADING_URL, {
-      method: "PATCH",
+    const response = await axios.patch(IMAGE_UPLOADING_URL, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${user.access_token}`,
       },
-      body: formData,
     });
 
     return response;
   } catch (error) {
-    console.log(error);
+    console.log("Error uploading image:", error);
   }
 };
-
 // Deleting image to api..
 const DELETE_IMAGE_UPLOADING_URL = BASE_URL + "/users/customers/profile";
 
@@ -363,17 +331,38 @@ export const deleteImageFromAPI = async (pickedImage, user) => {
       formData.append("profile_picture", "");
     }
 
-    const response = await fetch(DELETE_IMAGE_UPLOADING_URL, {
-      method: "PATCH",
+    const response = await axios.patch(DELETE_IMAGE_UPLOADING_URL, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${user.access_token}`,
       },
-      body: formData,
     });
 
     return response;
   } catch (error) {
-    console.log(error);
+    console.log("Error deleting image:", error);
+  }
+};
+
+// Api req to reset password...
+const RESET_PASS_URL = BASE_URL + "/users/customers/forgot-password";
+
+export const resetUserPassword = async (email) => {
+  const payload = {
+    verification_entity: email,
+  };
+
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  try {
+    const response = await axios.post(RESET_PASS_URL, payload, {
+      headers: headers,
+    });
+
+    return response;
+  } catch (error) {
+    console.log("Error creating user:", error);
   }
 };

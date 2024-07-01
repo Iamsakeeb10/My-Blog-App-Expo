@@ -63,17 +63,17 @@ const EnterNewEmailScreen = ({ navigation, route }) => {
     try {
       const response = await changeUserEmail(trimmedEmail, user);
 
-      if (!response.ok) {
+      if (!response.status >= 200 && !response.status < 300) {
         if (response.status === 404) {
           showToast("Request not found");
         } else if (response.status === 500) {
           showToast("Server error");
         } else {
-          const data = await response.json();
+          const data = response.data;
           showToast(data.message || "An error occurred");
         }
       } else {
-        const data = await response.json();
+        const data = response.data;
 
         showToast(data.message);
         getUpdatedEmail(trimmedEmail);
@@ -83,7 +83,7 @@ const EnterNewEmailScreen = ({ navigation, route }) => {
         });
       }
     } catch (error) {
-      showToast(error.message);
+      showToast(error.response);
     }
   };
 

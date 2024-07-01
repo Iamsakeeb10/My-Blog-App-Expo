@@ -74,9 +74,9 @@ const AddMobileNumber = ({ navigation, route }) => {
     try {
       const fullNumber = `+88${trimmedNumber}`;
       const response = await addMobileNumber(fullNumber, user);
-      const data = await response.json();
+      const data = response.data;
 
-      if (response.ok) {
+      if (response.status >= 200 && response.status < 300) {
         await AsyncStorage.setItem("shouldAddMobile", "false");
         Toast.show({
           type: "success",
@@ -108,7 +108,7 @@ const AddMobileNumber = ({ navigation, route }) => {
         }
       }
     } catch (error) {
-      showToast(error.message);
+      showToast(error.response);
     }
   };
 

@@ -26,6 +26,7 @@ import DriverScreen from "./Screens/DriverScreen";
 import EditProfileScreen from "./Screens/EditProfileScreen";
 import EnterNewEmailScreen from "./Screens/EnterNewEmailScreen";
 import FirstScreen from "./Screens/FirstScreen";
+import ForgotScreen from "./Screens/ForgotScreen";
 import GeoFenceScreen from "./Screens/GeoFenceScreen";
 import HelpSupportScreen from "./Screens/HelpSupportScreen";
 import HomeScreen from "./Screens/HomeScreen";
@@ -460,6 +461,35 @@ const App = () => {
                     },
                   }}
                 />
+                <Stack.Screen
+                  name="ForgotPasswordScreen"
+                  component={ForgotScreen}
+                  options={({ navigation }) => ({
+                    title: "",
+                    headerShadowVisible: false,
+                    headerStyle: {
+                      backgroundColor: "#fff",
+                    },
+                    contentStyle: {
+                      backgroundColor: "#fff",
+                    },
+
+                    headerLeft: () => (
+                      <View>
+                        <Pressable
+                          onPress={() => navigation.goBack()}
+                          style={({ pressed }) => [pressed && { opacity: 0.7 }]}
+                        >
+                          <Image
+                            style={styles.closeIcon}
+                            source={require("./assets/VerificationScreenIcons/Close.png")}
+                          />
+                        </Pressable>
+                      </View>
+                    ),
+                  })}
+                />
+
                 <Stack.Screen
                   name="Drawer"
                   options={{

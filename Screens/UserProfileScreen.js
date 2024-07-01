@@ -155,7 +155,7 @@ const UserProfileScreen = ({ navigation, drawerScreenBottomSheetHandler }) => {
         const data = await response.text();
         console.log(data);
 
-        if (response.ok) {
+        if (response.status >= 200 && response.status < 300) {
           // Updating context state...
           getUploadedImage(result.assets[0].uri);
           setPickedImage(result.assets[0].uri);
@@ -208,8 +208,8 @@ const UserProfileScreen = ({ navigation, drawerScreenBottomSheetHandler }) => {
     if (!result.canceled) {
       try {
         const response = await uploadImageToApi(result.assets[0].uri, user);
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status >= 200 && response.status < 300) {
+          const data = response.data;
           // Updating context state...
           getUploadedImage(result.assets[0].uri);
           setPickedImage(result.assets[0].uri);
@@ -226,9 +226,9 @@ const UserProfileScreen = ({ navigation, drawerScreenBottomSheetHandler }) => {
   const deleteUploadedPhotoHandler = async () => {
     try {
       const response = await deleteImageFromAPI("", user);
-      const data = await response.json();
+      const data = response.data;
 
-      if (response.ok) {
+      if (response.status >= 200 && response.status < 300) {
         // Updating context state...
         getUploadedImage(null);
         setPickedImage(null);
@@ -236,7 +236,7 @@ const UserProfileScreen = ({ navigation, drawerScreenBottomSheetHandler }) => {
         showToast("An error occurred!");
       }
     } catch (error) {
-      showToast(error.message);
+      showToast(error.response);
     }
   };
 

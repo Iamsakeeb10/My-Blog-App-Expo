@@ -205,13 +205,13 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
     try {
       const response = await bottomSheetChangePassword(password, user);
 
-      const data = await response.json();
+      const data = response.data;
 
       if (data && data.message) {
         showToast(data.message);
       }
 
-      if (response.ok) {
+      if (response.status >= 200 && response.status < 300) {
         navigation.navigate("ChangeEmailScreen", {
           userId: data.verification_id,
         });

@@ -113,20 +113,20 @@ const VerificationScreen = ({ route, navigation }) => {
     try {
       const response = await creatingUser(fullName, email, code, password);
 
-      if (!response.ok) {
-        const data = await response.json();
+      if (!response.status >= 200 && !response.status < 300) {
+        const data = response.data;
         console.log("not okay----", data);
 
         showToast(data.message || "An error occurred");
       } else {
-        const data = await response.json();
+        const data = response.data;
         console.log(data);
 
         showToast(data.message);
         navigation.navigate("Login");
       }
     } catch (error) {
-      showToast(error.message);
+      showToast(error.response);
     }
   };
 
@@ -142,14 +142,14 @@ const VerificationScreen = ({ route, navigation }) => {
         user
       );
 
-      if (!response.ok) {
-        const data = await response.json();
+      if (!response.status >= 200 && !response.status < 300) {
+        const data = response.data;
         showToast(data.message || "Verification failed");
       } else {
         showAlertHandler();
       }
     } catch (error) {
-      showToast(error.message);
+      showToast(error.response);
     }
   };
 
@@ -178,16 +178,16 @@ const VerificationScreen = ({ route, navigation }) => {
 
     try {
       const response = await verifyMobileNumber(mobile, code, user);
-      const data = await response.json();
+      const data = response.data;
       console.log("data---", data);
 
-      if (!response.ok) {
+      if (!response.status >= 200 && !response.status < 300) {
         showToast(data.message || "Verification failed");
       } else {
         showMobileAlertHandler();
       }
     } catch (error) {
-      showToast(error.message);
+      showToast(error.response);
     }
   };
 
