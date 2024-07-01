@@ -17,7 +17,6 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
-import ConfirmationAlert from "../components/UI/ConfirmationAlert";
 import IconButton from "../components/UI/IconButton";
 import { AuthContext } from "../store/auth-context";
 import {
@@ -33,7 +32,6 @@ const UserProfileScreen = ({ navigation, drawerScreenBottomSheetHandler }) => {
   const [userProfile, setUserProfile] = useState(null);
   const [pickedImage, setPickedImage] = useState(null);
   // Alert state
-  const [showAlert, setShowAlert] = useState(false);
   // Bottomsheet
   const bottomSheetRef = useRef(null);
   const [snapPoints, setSnapPoints] = useState(["35%"]);
@@ -73,19 +71,6 @@ const UserProfileScreen = ({ navigation, drawerScreenBottomSheetHandler }) => {
       });
     }
   }, [fullNameData]);
-
-  // Alert handler
-  const showDeleteAlertHandler = () => {
-    if (pickedImage) {
-      setShowAlert(true);
-    } else {
-      return;
-    }
-  };
-
-  const closeDeleteAlertHandler = () => {
-    setShowAlert(false);
-  };
 
   const openBottomSheet = () => {
     setBottomSheetIndex(0);
@@ -242,7 +227,6 @@ const UserProfileScreen = ({ navigation, drawerScreenBottomSheetHandler }) => {
     try {
       const response = await deleteImageFromAPI("", user);
       const data = await response.json();
-      console.log(data);
 
       if (response.ok) {
         // Updating context state...
@@ -254,8 +238,6 @@ const UserProfileScreen = ({ navigation, drawerScreenBottomSheetHandler }) => {
     } catch (error) {
       showToast(error.message);
     }
-
-    closeDeleteAlertHandler();
   };
 
   // Logic to change profile image...
@@ -594,7 +576,7 @@ const UserProfileScreen = ({ navigation, drawerScreenBottomSheetHandler }) => {
               <Text style={styles.bottomSheetText}>Upload from Gallery</Text>
             </Pressable>
             <Pressable
-              onPress={showDeleteAlertHandler}
+              onPress={deleteUploadedPhotoHandler}
               style={styles.bottomSheetRowContainer}
             >
               <Image
@@ -606,16 +588,6 @@ const UserProfileScreen = ({ navigation, drawerScreenBottomSheetHandler }) => {
           </View>
         </BottomSheetView>
       </BottomSheet>
-      <View>
-        <ConfirmationAlert
-          title="Are you sure?"
-          message=""
-          showAlert={showAlert}
-          enterLinkHandler={deleteUploadedPhotoHandler}
-          hideAlertFunc={closeDeleteAlertHandler}
-          onCloseAlert={closeDeleteAlertHandler}
-        />
-      </View>
     </View>
   );
 };

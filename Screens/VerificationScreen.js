@@ -220,12 +220,14 @@ const VerificationScreen = ({ route, navigation }) => {
   return (
     <View style={styles.rootContainer}>
       <View>
-        <Text style={styles.verificationText}>Verify email</Text>
+        <Text style={styles.verificationText}>
+          {mobile ? "Verify mobile" : "Verify email"}
+        </Text>
       </View>
       <View style={{ marginTop: 2 }}>
         <Text style={styles.verificationTextSmall}>
           We sent a security code to{" "}
-          <Text>{updatedEmail ? updatedEmail : mobile}</Text>
+          <Text>{mobile ? mobile : updatedEmail}</Text>
         </Text>
       </View>
       <View>

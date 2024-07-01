@@ -122,7 +122,7 @@ const DrawerContent = (props) => {
           </View>
 
           <DrawerItem
-            onPress={() => navigation.replace("Drawer")}
+            onPress={() => navigation.navigate("Drawer")}
             label="Blogs"
             icon={require("../../assets/DrawerIcons/payment.png")}
             on
@@ -135,6 +135,7 @@ const DrawerContent = (props) => {
           </View>
           <View style={styles.drawerItem}>
             <DrawerItem
+              onPress={() => navigation.navigate("GeoFence")}
               label="Geo Fence"
               icon={require("../../assets/DrawerIcons/geo-fence.png")}
             />

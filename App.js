@@ -7,6 +7,7 @@ import { StatusBar } from "expo-status-bar";
 import { useContext, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Image,
   Pressable,
   StyleSheet,
@@ -131,15 +132,29 @@ const DrawerNavigator = () => {
     setDrawerScreenBottomSheetOpen(open);
   };
 
-  const logoutHandler = async () => {
-    try {
-      await logout();
-      navigation.replace("Login");
-    } catch (error) {
-      console.log(error);
-    }
+  const logoutHandler = () => {
+    Alert.alert(
+      "Logout",
+      "Do you want to logout?",
+      [
+        {
+          text: "Cancel",
+        },
+        {
+          text: "Okay",
+          onPress: async () => {
+            try {
+              await logout();
+              navigation.replace("Login");
+            } catch (error) {
+              console.log(error);
+            }
+          },
+        },
+      ],
+      { cancelable: true } // This makes the alert dismissible by tapping outside
+    );
   };
-
   return (
     <Drawer.Navigator
       drawerContent={(props) => <DrawerContent {...props} />}
@@ -249,15 +264,40 @@ const DrawerNavigator = () => {
         component={LiveTrackScreen}
       />
       <Drawer.Screen
-        options={() => ({
-          drawerLabel: () => (
-            <DrawerItem
-              label="Geo Fence"
-              icon={require("./assets/DrawerIcons/geo-fence.png")}
-            />
+        options={({ navigation }) => ({
+          headerStyle: {
+            backgroundColor: "#FFF",
+          },
+
+          headerTitleStyle: {
+            color: "#1E1F20",
+            fontSize: 16,
+            fontFamily: "roboto-semi",
+          },
+
+          headerShadowVisible: false,
+
+          headerTitle: "Geofence",
+
+          headerTitleAlign: "center",
+
+          sceneContainerStyle: {
+            backgroundColor: "#FAFAFA",
+          },
+
+          headerLeft: () => (
+            <Pressable
+              style={{ position: "absolute", left: 15 }}
+              onPress={() => navigation.goBack()}
+            >
+              <Image
+                style={styles.arrowIcon}
+                source={require("./assets/UserProfileScreenImages/left-arrow.png")}
+              />
+            </Pressable>
           ),
         })}
-        name="GeoFenceScreen"
+        name="GeoFence"
         component={GeoFenceScreen}
       />
       <Drawer.Screen

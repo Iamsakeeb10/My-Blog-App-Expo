@@ -304,6 +304,7 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
               onPress={
                 userProfile && userProfile.email ? openBottomSheet : null
               }
+              hitSlop={{ top: 20, bottom: 20, left: 50, right: 20 }}
             >
               <Text style={[styles.rowEndText]}>
                 {userProfile && userProfile.email ? "Change" : "Add Email"}
@@ -321,6 +322,7 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
                   isFromEditProfileScreen: true,
                 })
               }
+              hitSlop={{ top: 20, bottom: 20, left: 50, right: 20 }}
             >
               <Text
                 style={{
@@ -364,6 +366,7 @@ const EditProfileScreen = ({ isBottomSheetOpenYet }) => {
                   isChangeNumber: userProfile && userProfile.mobile,
                 })
               }
+              hitSlop={{ top: 20, bottom: 20, left: 50, right: 20 }}
             >
               <Text style={styles.rowEndText}>
                 {userProfile && userProfile.mobile ? "Change" : "Add Number"}
