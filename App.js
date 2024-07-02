@@ -16,6 +16,8 @@ import {
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import AboutScreen from "./Screens/AboutScreen";
 import AddMobileNumber from "./Screens/AddMobileNumber";
+import BillPayScreen from "./Screens/BillPayScreen";
+import BillingDetailsScreen from "./Screens/BillingDetailsScreen";
 import BottomTabOne from "./Screens/BottomTabOne";
 import BottomTabThree from "./Screens/BottomTabThree";
 import BottomTabTwo from "./Screens/BottomTabTwo";
@@ -30,7 +32,7 @@ import ForgotScreen from "./Screens/ForgotScreen";
 import GeoFenceScreen from "./Screens/GeoFenceScreen";
 import HelpSupportScreen from "./Screens/HelpSupportScreen";
 import HomeScreen from "./Screens/HomeScreen";
-import LiveTrackScreen from "./Screens/LiveTrackScreen";
+import PaymentHistoryScreen from "./Screens/PaymentHistoryScreen";
 import RateScreen from "./Screens/RateScreen";
 import ReferScreen from "./Screens/ReferScreen";
 import SettingScreen from "./Screens/SettingScreen";
@@ -260,9 +262,13 @@ const DrawerNavigator = () => {
               icon={require("./assets/DrawerIcons/live-tracking.png")}
             />
           ),
+          headerShown: false,
+          sceneContainerStyle: {
+            backgroundColor: "#fff",
+          },
         })}
-        name="LiveTrackScreen"
-        component={LiveTrackScreen}
+        name="BillAndPayment"
+        component={BillPayScreen}
       />
       <Drawer.Screen
         options={({ navigation }) => ({
@@ -678,6 +684,86 @@ const App = () => {
                           source={require("./assets/UserProfileScreenImages/left-arrow.png")}
                         />
                       </Pressable>
+                    ),
+                  })}
+                />
+                <Stack.Screen
+                  name="BillingDetailsScreen"
+                  component={BillingDetailsScreen}
+                  options={({ navigation }) => ({
+                    headerStyle: {
+                      backgroundColor: "#FFF",
+                    },
+                    contentStyle: {
+                      backgroundColor: "#fff",
+                    },
+
+                    headerShadowVisible: false,
+                    headerTitleAlign: "center",
+                    title: "Billing Details",
+                    headerTitleStyle: {
+                      color: "#151312",
+                      fontSize: 16,
+                      fontFamily: "roboto-semi",
+                    },
+
+                    headerLeft: () => (
+                      <View>
+                        <Pressable
+                          style={({ pressed }) => [pressed && { opacity: 0.7 }]}
+                          onPress={() => navigation.goBack()}
+                        >
+                          <Image
+                            style={{ width: 22, height: 22 }}
+                            source={require("./assets/VerificationScreenIcons/Close.png")}
+                          />
+                        </Pressable>
+                      </View>
+                    ),
+                  })}
+                />
+                <Stack.Screen
+                  name="PaymentHistoryScreen"
+                  component={PaymentHistoryScreen}
+                  options={({ navigation }) => ({
+                    headerStyle: {
+                      backgroundColor: "#FFF",
+                    },
+                    contentStyle: {
+                      backgroundColor: "#fff",
+                    },
+
+                    headerShadowVisible: false,
+                    headerTitleAlign: "center",
+                    title: "Payment History",
+                    headerTitleStyle: {
+                      color: "#151312",
+                      fontSize: 16,
+                      fontFamily: "roboto-semi",
+                    },
+
+                    headerLeft: () => (
+                      <View>
+                        <IconButton
+                          onPress={() => navigation.goBack()}
+                          icon="arrow-back-outline"
+                          size={29}
+                          color="#000"
+                        />
+                      </View>
+                    ),
+
+                    headerRight: () => (
+                      <View>
+                        <Pressable
+                          style={({ pressed }) => [pressed && { opacity: 0.7 }]}
+                        >
+                          <Image
+                            style={{ width: 24, height: 24 }}
+                            source={require("./assets/BillIcons/filter.png")}
+                          />
+                        </Pressable>
+                      </View>
                     ),
                   })}
                 />

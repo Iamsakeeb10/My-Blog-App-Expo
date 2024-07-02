@@ -622,7 +622,6 @@ const styles = StyleSheet.create({
 
   rowEndText: {
     position: "absolute",
-    position: "absolute",
     top: "50%",
     transform: [{ translateY: -10 }],
     right: 12,

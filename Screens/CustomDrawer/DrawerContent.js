@@ -129,7 +129,8 @@ const DrawerContent = (props) => {
           />
           <View style={styles.drawerItem}>
             <DrawerItem
-              label="Live Tracking"
+              onPress={() => navigation.navigate("BillAndPayment")}
+              label="Bill & Payment"
               icon={require("../../assets/DrawerIcons/live-tracking.png")}
             />
           </View>
